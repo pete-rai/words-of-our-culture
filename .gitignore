@@ -1,0 +1,3 @@
+./corpus/movies/gather/temp/*
+./corpus/movies/text/tt*.txt
+./db/sql/*
