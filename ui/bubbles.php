@@ -1,5 +1,6 @@
 <?php
 
+  include_once 'lib/stemmer.php';
   include_once 'lib/helper.php';
   include_once 'lib/model.php';
 
@@ -13,9 +14,9 @@
   }
   else
   {
-      $utterances = Model::getUtterances (Model::$posWord, $topic);
-      $subject    = implode (', ', $utterances);
-      $type       = count ($utterances) == 1 ? 'Word' : 'Words';
+      $topic   = PorterStemmer::stem ($topic);
+      $subject = implode (', ', Model::getUtterances (Model::$posWord, $topic));
+      $type    = strpos ($subject, ',') ? 'Words' : 'Word';
   }
 
   $title  = 'wooc'.($subject ? " &raquo; $subject" : '');
@@ -37,12 +38,30 @@
     <script src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
     <script src='js/jquery.slidein.js'></script>
     <script src='js/bubbles.p5.js'></script>
+    <script src="//platform-api.sharethis.com/js/sharethis.js#property=59ed1844899d1d001141cf42&product=unknown" async='async'></script>
     <script>
 
-      var source   = '<?php echo $source; ?>';
-      var onselect = function (key)
+      function whenPresent (control, action)
       {
-          $('#next').attr ('action', 'bubbles.php?topic=' + key);
+          if ($(control).length === 0)
+          {
+              setTimeout (whenPresent.bind (this, control, action), 500);
+          }
+          else
+          {
+              action ($(control));
+          }
+      }
+
+      whenPresent ('.st-sticky-share-buttons', function (control)
+      {
+          control.css ('opacity', '0.7');
+      });
+
+      var source   = '<?php echo $source; ?>';
+      var onselect = function (key, data)
+      {
+          $('#next').attr ('action', 'bubbles.php?topic=' + data.topic);
           $('input#topic').val (key);
           $('#next').submit ();
       };
@@ -56,7 +75,7 @@
 
       $(document).ready (function()
       {
-          $('#steps').slidein ({ open: false, opacity: 0.7, peek: 0, breadth: 300, toClose: 'hover' });
+          $('#steps').slidein ({ open: false, opacity: 0.7, peek: 0, breadth: 300, toOpen: 'hover', toClose: 'hover', prompt: 'info' });
       });
 
     </script>
@@ -67,6 +86,7 @@
     </form>
     <h1><?php echo "$type: $subject"; ?></h1>
     <div id='steps'>
+        <h2>Words of our Culture</h2>
       <ol>
         <?php echo $steps; ?>
       </ol>
