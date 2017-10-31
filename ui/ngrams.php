@@ -39,7 +39,7 @@
           $ll  = logLikelihood ($n1, $o1, $n2, $o2);  // the magic lies in here ;)
           $ref = $content ? $item->stem : $item->content_id;
 
-          $results ['_'.$ref] =
+          $results ['_'.$ref] =  // underscore ensures that all keys are strings - else some are ints
           [
               'content_id' => $item->content_id,
                    'title' => $item->title,
@@ -47,7 +47,7 @@
                       'll' => $ll
           ];
       }
-
+/*
       array_walk ($results, function ($a) use (&$max)
       {
           $max = max ($max, $a ['ll']);  // find the max loglikelihood
@@ -57,7 +57,7 @@
       {
           $a ['percent'] = $a ['ll'] / $max * 100;  // rebase all to be a percentage of the maximum
       });
-
+*/
       uasort ($results, function ($a, $b)
       {
           return $a ['ll'] < $b ['ll'];  // sort into loglikelihood order
