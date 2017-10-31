@@ -7,8 +7,6 @@
   include_once 'lib/stemmer.php';
   include_once 'lib/loglikelihood.php';
 
-  define ('MAX_ITEMS', 100);  // the maximum number of items to return to the bubbles
-
   // --- calculates the log likelihood for the given context
 
   function getLogLikelihood ($context, $content)
@@ -41,7 +39,7 @@
           $ll  = logLikelihood ($n1, $o1, $n2, $o2);  // the magic lies in here ;)
           $ref = $content ? $item->stem : $item->content_id;
 
-          $results [$ref] =
+          $results ['_'.$ref] =
           [
               'content_id' => $item->content_id,
                    'title' => $item->title,
@@ -70,17 +68,24 @@
 
   // --- make a list in the format that the bubbles are expecting
 
-  function makeList ($items, $content)
+  function makeList ($items, $content, $limit)
   {
       $tags  = [];
-      $items = array_slice ($items, 0, MAX_ITEMS);
+      $items = array_slice ($items, 0, $limit);
 
       foreach ($items as $id=>$item)
       {
+          $utter = array_reduce (explode (' ', $item ['utterance']), function ($a, $b)
+          {
+              if (!$a || !$b) return $a.$b;
+              return (strlen ($a) < strlen ($b)) ? $a : $b;
+          });
+
           $tags [$id] =
           [
               'name'  => $item [$content ? 'utterance' : 'title'],
               'count' => $item ['ll'],
+              'topic' => $content ? $utter : $item ['content_id'],
           ];
       }
 
@@ -89,20 +94,22 @@
 
   // --- provide the json document to power the bubble drawing
 
-  function getNGrams ($topic)
+  function getNGrams ($topic, $limit)
   {
       $json = '{}';
 
       if ($topic)
       {
           $content = strpos ($topic, 'tt') === 0;
-          $json    = makeList (getLogLikelihood ($topic, $content), $content);
+          $json    = makeList (getLogLikelihood ($topic, $content), $content, $limit);
       }
 
       return $json;
   }
 
+  define ('MAX_ITEMS', 100);  // the maximum number of items to return to the bubbles
+
   header ('Content-Type: application/json');
-  echo getNGrams (getCleanParam ('topic'));
+  echo getNGrams (getCleanParam ('topic'), max (0, getParam ('limit', MAX_ITEMS)));
 
 ?>
