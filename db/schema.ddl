@@ -145,6 +145,20 @@ CREATE TABLE normative_lexicon
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
+-- content_utterances table - sz = utterances * content
+
+CREATE TABLE content_utterances
+(
+    content_id CHAR(9) NOT NULL,
+    pos        CHAR(8) NOT NULL,
+    stem       TEXT    NOT NULL,
+    utterances TEXT    NOT NULL,
+--    CONSTRAINT FOREIGN KEY fk_content_id_on_cont_utter (content_id) REFERENCES content (content_id),
+--    CONSTRAINT FOREIGN KEY fk_pos_on_cont_utter        (pos)        REFERENCES pos     (pos),
+    PRIMARY KEY (content_id, pos, stem(128))
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
 -- stored procedures
 
 DELIMITER //
@@ -181,6 +195,23 @@ BEGIN
  GROUP BY pos;
 END //
 
+zDROP PROCEDURE IF EXISTS fill_content_utterances //
+CREATE PROCEDURE fill_content_utterances ()
+BEGIN
+   INSERT
+     INTO content_utterances (content_id, pos, stem, utterances)
+   SELECT o.content_id,
+          u.pos,
+          u.stem,
+          GROUP_CONCAT(u.utterance SEPARATOR ' ') utterances
+     FROM utterance u,
+          occurrence o
+    WHERE u.utterance_id = o.utterance_id
+ GROUP BY o.content_id,
+          u.pos,
+          u.stem;
+END //
+
 DELIMITER ;
 
 COMMIT;
@@ -192,6 +223,7 @@ SELECT CONCAT (now(),' - filling denormal tables') info;
 CALL fill_normative_occurrence;
 CALL fill_lexicon;
 CALL fill_normative_lexicon;
+CALL fill_content_utterances;
 
 COMMIT;
 
