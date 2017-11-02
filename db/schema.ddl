@@ -195,7 +195,7 @@ BEGIN
  GROUP BY pos;
 END //
 
-zDROP PROCEDURE IF EXISTS fill_content_utterances //
+DROP PROCEDURE IF EXISTS fill_content_utterances //
 CREATE PROCEDURE fill_content_utterances ()
 BEGIN
    INSERT
