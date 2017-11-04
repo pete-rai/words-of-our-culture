@@ -82,14 +82,14 @@ The model was implemented within a relational database; more specifically I used
 
 ```
 
-        +--------------+            +--------------+
-        | CONTENT      |            | OCCURRENCE   |            +--------------+
-        +--------------+            +--------------+            | UTTERANCE    |
-        | id           |- 1 ---- * -| content_id   |            +--------------+
-        | title        |            | utterance_id |- * ---- 1 -| id           |
-        | country      |            | tally        |            | stem         |
-        | year         |            +--------------+            | utterance    |
-        +--------------+                                        +--------------+
+        ┌──────────────┐            ┌──────────────┐
+        │   CONTENT    │            │  OCCURRENCE  │            ┌──────────────┐
+        ├──────────────┤            ├──────────────┤            │  UTTERANCE   │
+        │ id           ├─ 1 ──── * ─┤ content_id   │            ├──────────────┤
+        │ title        │            │ utterance_id ├─ * ──── 1 ─┤ id           │
+        │ country      │            │ tally        │            │ stem         │
+        │ year         │            └──────────────┘            │ utterance    │
+        └--------------┘                                        └──────────────┘
 
 ```
 
