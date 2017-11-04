@@ -68,7 +68,7 @@
 
       var ontip = function (key)
       {
-          return "double click to drill down";
+          return "select this bubble to drill down";
       };
 
       var bubbles = new Bubbles (source, null, onselect, ontip);
