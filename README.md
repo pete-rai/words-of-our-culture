@@ -82,15 +82,15 @@ The model was implemented within a relational database; more specifically I used
 
 ```
 
-      +-----------+                                            +-------------+
-      |  CONTENT  |                                            |  UTTERANCE  |
-      +-----------+              +--------------+              +-------------+
-      | id        |              |  OCCURRENCE  |              | id          |
-      | title     |              +--------------+              | pos         |
-      | country   | - 1 ---- * - | content_id   | - * ---- 1 - | stem        |
-      | year      |              | utterance_id |              | utterance   |
-      +-----------+              | tally        |              +-------------+
-                                 +--------------+
+        +--------------+            +--------------+
+        | CONTENT      |            | OCCURRENCE   |            +--------------+
+        +--------------+            +--------------+            | UTTERANCE    |
+        | id           |- 1 ---- * -| content_id   |            +--------------+
+        | title        |            | utterance_id |- * ---- 1 -| id           |
+        | country      |            | tally        |            | stem         |
+        | year         |            +--------------+            | utterance    |
+        +--------------+                                        +--------------+
+
 ```
 
 Note: In the model you will find reference to fields called "pos". This stands for part-of-speech. In this implementation, the only pos value I use is "word". Another valid, and often enlightening, value is "bi-gram", which is a pair of words (for example, "New York"). Analysis based on bi-grams can be very useful, but it significantly swells the data counts. After bi-grams, comes tri-grams or more generally n-grams.
