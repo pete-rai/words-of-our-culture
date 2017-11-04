@@ -147,7 +147,7 @@ ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 -- content_utterances table - sz = utterances * content
 
-CREATE TABLE content_utterances
+CREATE TABLE content_utterance
 (
     content_id CHAR(9) NOT NULL,
     pos        CHAR(8) NOT NULL,
@@ -155,6 +155,20 @@ CREATE TABLE content_utterances
     utterances TEXT    NOT NULL,
 --    CONSTRAINT FOREIGN KEY fk_content_id_on_cont_utter (content_id) REFERENCES content (content_id),
 --    CONSTRAINT FOREIGN KEY fk_pos_on_cont_utter        (pos)        REFERENCES pos     (pos),
+    PRIMARY KEY (content_id, pos, stem(128))
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+-- content_occurrence table - sz = occurrence * content
+
+CREATE TABLE content_occurrence
+(
+    content_id CHAR(9) NOT NULL,
+    pos        CHAR(8) NOT NULL,
+    stem       TEXT    NOT NULL,
+    tally      INT(6) UNSIGNED NOT NULL,
+--    CONSTRAINT FOREIGN KEY fk_content_id_on_cont_occurr (content_id) REFERENCES content (content_id),
+--    CONSTRAINT FOREIGN KEY fk_pos_on_cont_occurr        (pos)        REFERENCES pos     (pos),
     PRIMARY KEY (content_id, pos, stem(128))
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
@@ -195,11 +209,11 @@ BEGIN
  GROUP BY pos;
 END //
 
-DROP PROCEDURE IF EXISTS fill_content_utterances //
-CREATE PROCEDURE fill_content_utterances ()
+DROP PROCEDURE IF EXISTS fill_content_utterance //
+CREATE PROCEDURE fill_content_utterance ()
 BEGIN
    INSERT
-     INTO content_utterances (content_id, pos, stem, utterances)
+     INTO content_utterance (content_id, pos, stem, utterances)
    SELECT o.content_id,
           u.pos,
           u.stem,
@@ -207,6 +221,25 @@ BEGIN
      FROM utterance u,
           occurrence o
     WHERE u.utterance_id = o.utterance_id
+ GROUP BY o.content_id,
+          u.pos,
+          u.stem;
+END //
+
+DROP PROCEDURE IF EXISTS fill_content_occurrence //
+CREATE PROCEDURE fill_content_occurrence ()
+BEGIN
+   INSERT
+     INTO content_occurrence (content_id, pos, stem, tally)
+   SELECT c.content_id,
+          u.pos,
+          u.stem,
+          SUM(o.tally) tally
+     FROM occurrence o,
+          utterance u,
+          content c
+    WHERE o.utterance_id = u.utterance_id
+      AND o.content_id = c.content_id
  GROUP BY o.content_id,
           u.pos,
           u.stem;
@@ -223,7 +256,8 @@ SELECT CONCAT (now(),' - filling denormal tables') info;
 CALL fill_normative_occurrence;
 CALL fill_lexicon;
 CALL fill_normative_lexicon;
-CALL fill_content_utterances;
+CALL fill_content_utterance;
+CALL fill_content_occurrence;
 
 COMMIT;
 

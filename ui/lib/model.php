@@ -157,21 +157,18 @@ class Model extends Database
     {
         $sql = "SELECT c.content_id,
                        c.title,
-                       cu.utterances utterance,                       
-                       u.stem,
-                       SUM(o.tally) tally
-                  FROM occurrence o,
-                       utterance u,
-                       content c,
-                       content_utterances cu
-                 WHERE o.utterance_id = u.utterance_id
-                   AND o.content_id = c.content_id
-                   AND cu.content_id = c.content_id
-                   AND cu.pos = u.pos
-                   AND cu.stem = u.stem
-                   AND c.content_id = ':key'
-                   AND u.pos = ':pos'
-              GROUP BY u.stem";
+                       cu.utterances utterance,
+                       co.stem,
+                       co.tally
+                  FROM content c,
+                       content_utterance cu,
+                       content_occurrence co
+                 WHERE cu.content_id = co.content_id
+                   AND cu.pos = co.pos
+                   AND cu.stem = co.stem
+                   AND co.content_id = c.content_id
+                   AND co.content_id = ':key'
+                   AND co.pos = ':pos'";
 
         return self::executeQuery ($sql, ['pos' => $pos, 'key' => $key]);
     }
