@@ -89,13 +89,45 @@ The model was implemented within a relational database; more specifically I used
         │ title        │            │ utterance_id ├─ * ──── 1 ─┤ id           │
         │ country      │            │ tally        │            │ stem         │
         │ year         │            └──────────────┘            │ utterance    │
-        └--------------┘                                        └──────────────┘
+        └──────────────┘                                        └──────────────┘
 
 ```
 
 Note: In the model you will find reference to fields called "pos". This stands for part-of-speech. In this implementation, the only pos value I use is "word". Another valid, and often enlightening, value is "bi-gram", which is a pair of words (for example, "New York"). Analysis based on bi-grams can be very useful, but it significantly swells the data counts. After bi-grams, comes tri-grams or more generally n-grams.
 
 Note: In the model you will find a number of additional denormal tables. The use of denormal tables is generally very bad practice within an RDBMS. Normally I would shun such database abuses. However, two things lead to the decision to use denormal tables. Firstly, it means that data access for the visualisation becomes trivial, allowing me to host on a low-grade (read free) hosting server. Secondly, it's a one-time, write-only schema, so keeping the denormal tables up to date is not a worry. This latter consideration is also the reason why I commented out all the constraints in the [schema definition](https://github.com/pete-rai/words-of-our-culture/blob/master/db/schema.ddl).
+
+## Log-Likelihood
+
+In order to do the analysis for the main [bubbles visualisation](http://rai.org.uk/wooc/random.php?type=movie)) I use a statistical technique called log-likelihood. This helps us to identify the _significant_ words in a given movie.
+
+It is important to understand that the significant words are not the same as the _frequently used_ words. The most frequently used words in movie are generally also the most frequently used words in general English language discourse. They reveal nothing significant about the context of the movie in which they are uttered. For example, here are the ten most frequently uttered words across the whole corpus:
+
+1. you
+2. the
+3. i
+4. to
+5. a
+6. and
+7. it  
+8. of  
+9. that
+10. in
+
+As you see, nothing of any great interest there. Let's try narrowing down to just one specific movie and again we pick Casablanca:
+
+1. you
+2. i
+3. the
+4. to
+5. a
+6. it
+7. in
+8. of
+9. that
+10. is
+
+Again, nothing of note. In fact, almost the same as the frequency counts in the wider corpus. However, if we list onwards we find that that 24th most frequently uttered word in Casablanca is "rick". This is, of course, the name of [Humphrey Bogart](https://en.wikipedia.org/wiki/Humphrey_Bogart)'s iconic character in that great movie. Whilst the word "rick" is frequently said in Casablanca, it's not a word we would expect to be used much on a day-to-day basis. In fact, it is only mentioned in 2.3% of the movies of the corpus. Whilst "rick" is said 74 times in Casablanca, it is only said 0.2 times on average in all movies. Hence "rick" is a _statistically significant_ word in the movie Casablanca.
 
 
 
