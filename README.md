@@ -29,7 +29,7 @@ In linguistics, a _corpus_ is defined as "a collection of written or spoken mate
 
 Collecting and utilising subtitles proved to be non-trivial exercise. A great many of the openly available subtitle tracks were of low quality and contained many errors and even omissions. Consequently, there was a lot of data "wrangling" that I had to deploy in order to extract useful and accurate text from the subtitle tracks. You can see the details of that wrangling by looking at the implementation within the [corpus section](https://github.com/pete-rai/words-of-our-culture/tree/master/corpus) of the codebase.
 
-Whilst forming the corpus I wanted to make a list of _all the things that were said_, but did not concern myself with _who said it_. Hence after the first phase of corpus formation I arrive at blocks of texts that contains all the utterances and corresponding punctuation, but none of the names of the speakers.
+Whilst forming the corpus I wanted to make a list of _all the things that were said_, but did not concern myself with _who said it_ or the _order in which things were said_. Hence after the first phase of corpus formation I arrive at blocks of texts that contains all the utterances and corresponding punctuation, but none of the names of the speakers.
 
 Here is an example of the first phase corpus text from the movie Casablanca:
 
@@ -39,6 +39,18 @@ Occasionally, there were sections of non-spoken text with the subtitle tracks. T
 
 ### Phase Two: Normalising the Words
 
+Once the corpus had been gathered, the next phase was to normalise the text in order to facilitate matching across the movies. The normalisation method used was quite simple (note the order of the steps below is significant).
+
+1. Conversion of accented characters to their "normal" English language variant. So, for example, the accented letter "é" was normalised to "e" and the letter "ä" was normalised to "a", and so on.
+2. All whitespace was normalised to a single space. This step removed non-space white space like tabs, new-lines, etc.
+3. All punctuation was removed. So, for example, the word "it's" became "its" and the word "you're" was normalised to "youre", and so on. Note this also removes full stops, so at this point we lose sentence breaks.
+4. All text we converted to lowercase.
+
+Here is an example of the same text from Casablanca shown in the earlier section, but after the normalisation process has been executed upon it:
+
+> they grab ugarte then she walks in thats the way it goes one in one out sam yes boss if its december 1941 in casablanca what time is it in new york what my watch stopped i bet theyre asleep in new york i bet theyre asleep all over america of all the gin joints in all the towns in all the world she walks into mine whats that youre playing a little something of my own well stop it you know what i want to hear no i dont you played it for her you can play it for me i dont think i can remember if she can stand it i can play it yes boss
+
+Note that, if you plan to use the source code for your own use, it's important to maintain a multi-byte text encoding chain on all your processes. If you don't, then some of the more exotic characters will be lost before step 1 above and properly handle them.
 
 ### Phase Three: Stemming the Words
 
