@@ -11,7 +11,7 @@ The main output is a visual model of [the words which most characterise a given 
 
 ## The Movies
 
-So how did I go out choosing movies for inclusion within the corpus? Well the criteria was very simple, I chose movies that were:
+So how did I go out choosing movies for inclusion within the corpus? Well the criteria was very simple, I chose movies which were:
 
 * Popular and likely to be well known
 * Made after the invention of sound on film (for obvious reasons)
@@ -69,6 +69,33 @@ Here is an example of the same text from Casablanca shown in the earlier section
 Whilst we use stemming to provide consistent handling of commonly rooted words, we do still maintain a careful map from the stem to the actual words uttered in the movies.
 
 ## The Data Model
+
+The data model used for the project is simple and concise. There only three entities types:
+
+Entity | Description
+--- | ---
+Content | A _movie_
+Utterance | A _word_
+Occurrence | An instance of a _word_ said within a _movie_
+
+The model was implemented within a relational database; more specifically I used MySQL. The data counts are well within the MySQL capabilities and hence, I did not require use of any big-data tech. The tables live within a classic many-to-many formation:
+
+```
+
+      +-----------+                                            +-------------+
+      |  CONTENT  |                                            |  UTTERANCE  |
+      +-----------+              +--------------+              +-------------+
+      | id        |              |  OCCURRENCE  |              | id          |
+      | title     |              +--------------+              | pos         |
+      | country   | - 1 ---- * - | content_id   | - * ---- 1 - | stem        |
+      | year      |              | utterance_id |              | utterance   |
+      +-----------+              | tally        |              +-------------+
+                                 +--------------+
+```
+
+Note: In the model you will find reference to fields called "pos". This stands for part-of-speech. In this implementation, the only pos value I use is "word". Another valid, and often enlightening, value is "bi-gram", which is a pair of words (for example, "New York"). Analysis based on bi-grams can be very useful, but it significantly swells the data counts. After bi-grams, comes tri-grams or more generally n-grams.
+
+Note: In the model you will find a number of additional denormal tables. The use of denormal tables is generally very bad practice within an RDBMS. Normally I would shun such database abuses. However, two things lead to the decision to use denormal tables. Firstly, it means that data access for the visualisation becomes trivial, allowing me to host on a low-grade (read free) hosting server. Secondly, it's a one-time, write-only schema, so keeping the denormal tables up to date is not a worry. This latter consideration is also the reason why I commented out all the constraints in the [schema definition](https://github.com/pete-rai/words-of-our-culture/blob/master/db/schema.ddl).
 
 
 
