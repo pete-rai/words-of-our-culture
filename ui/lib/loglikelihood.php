@@ -1,11 +1,11 @@
 <?php
 
   // for more info see : http://ucrel.lancs.ac.uk/llwizard.html
-  
+
   // $n1 = total words in corpus 1 (usually the normative corpus)
-  // $n2 = total words in corpus 2 
+  // $n2 = total words in corpus 2
   // $o1 = observed count for the word in corpus 1 (usually the normative corpus)
-  // $o2 = observed count for the word in corpus 2 
+  // $o2 = observed count for the word in corpus 2
 
   function logLikelihood ($n1, $o1, $n2, $o2)
   {
