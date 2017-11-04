@@ -43,7 +43,7 @@ Once the corpus had been gathered, the next phase was to normalise the text in o
 
 1. Conversion of accented characters to their "normal" English language variant. So, for example, the accented letter "é" was normalised to "e" and the letter "ä" was normalised to "a", and so on.
 2. All whitespace was normalised to a single space. This step removed non-space white space like tabs, new-lines, etc.
-3. All punctuation was removed. So, for example, the word "it's" became "its" and the word "you're" was normalised to "youre", and so on. Note this also removes full stops, so at this point we lose sentence breaks.
+3. All punctuation was removed. So, for example, the word "it's" became "its" and the word "you're" was normalised to "youre", and so on. Note this also removes full stops, so at this point we also lose sentence breaks.
 4. All text we converted to lowercase.
 
 Here is an example of the same text from Casablanca shown in the earlier section, but after the normalisation process has been executed upon it:
@@ -54,8 +54,21 @@ Note that, if you plan to use the source code for your own use, it's important t
 
 ### Phase Three: Stemming the Words
 
+The final text preparation phase was to apply a word stemmer algorithm. A _stemmer_ is defined as "an algorithm for removing inflectional and derivational endings in order to reduce word forms to a common stem". That sounds quite complicated, but the concept is actually very simple.
 
+When we count word occurrences, we don't want to make a distinct between the many variants of the same root word. So, for example, we want to treat all "happy", "happily", "happier", "happiest", etc all as the same single word. Clearly the _root word_ for these is "happy", but identifying the root word for all words in English is a next to impossible task. Instead we use an algorithm to reduce all these words to the same _stem_.
 
+The stem for all these words is the single word "happi". But wait, "happi" is not an valid English language word. It is important to understand that stemming is used to find a stem, not the root word. There is no reason for the stem to be a valid word in itself; rather only that all the right words reduce to the same stem.
+
+For this project, I used a very popular English language stemming algorithm called Porter Stemmer. The Porter Stemmer was created by the English linguist [Mark Porter](https://en.wikipedia.org/wiki/Martin_Porter) and the [PHP implementation I used](https://github.com/pete-rai/words-of-our-culture/blob/master/lib/stemmer.php) was developed by [Richard Heyes](http://www.phpguru.org)
+
+Here is an example of the same text from Casablanca shown in the earlier section, but after the stemming process has been executed upon it:
+
+> thei grab ugart then she walk in that the wai it goe on in on out sam ye boss if it decemb 1941 in casablanca what time is it in new york what my watch stop i bet theyr asleep in new york i bet theyr asleep all over america of all the gin joint in all the town in all the world she walk into mine what that your plai a littl someth of my own well stop it you know what i want to hear no i dont you plai it for her you can plai it for me i dont think i can rememb if she can stand it i can plai it ye boss
+
+Whilst we use stemming to provide consistent handling of commonly rooted words, we do still maintain a careful map from the stem to the actual words uttered in the movies.
+
+## The Data Model
 
 
 
