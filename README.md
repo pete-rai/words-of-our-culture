@@ -125,9 +125,13 @@ As you see, nothing of any great interest there. Let's try narrowing down to jus
 7. in
 8. of
 
-Again, nothing of note. In fact, almost the same as the frequency counts in the wider corpus. However, if we list onwards we find that that 24th most frequently uttered word in Casablanca is "rick". This is, of course, the name of [Humphrey Bogart](https://en.wikipedia.org/wiki/Humphrey_Bogart)'s iconic character in that great movie. Whilst the word "rick" is frequently said in Casablanca, it's not a word we would expect to be used much on a day-to-day basis. In fact, it is only mentioned in 2.3% of the whole movies in the wholw corpus. Whilst "rick" is said 74 times in Casablanca, it is only said 0.2 times on average in all movies. Hence "rick" is a _statistically significant_ word in the movie Casablanca.
+Again, there is nothing of note. In fact, it's almost the same as the frequency counts in the wider corpus. However, if we list onwards we find that that 24th most frequently uttered word in Casablanca is "rick". This is, of course, the name of [Humphrey Bogart](https://en.wikipedia.org/wiki/Humphrey_Bogart)'s iconic character in that great movie. Whilst the word "rick" is frequently said in Casablanca, it's not a word we would expect to be used much on a day-to-day basis. In fact, it is only mentioned in 2.3% of the movies in the whole corpus. Whilst "rick" is said 74 times in Casablanca, it is only said 0.2 times on average in all movies. Hence, "rick" is a _statistically significant_ word in the movie Casablanca. It occurs more often that one would expect from normal discourse. Other such words in Casablanca are "visa", "letters", "lisbon", "ilsa", etc.
 
 ### Log-Likelihood
+
+Log-likelihood is a statistical technique that helps us identify significant words in a given movie when compared with the wider corpus. Essentially is helps us compare are likely a word would be to occur in any movie and the compare that with how often it actually occurs in a given movie. This likelihood value is akin to looking for the _probability of occurrence_.
+
+You can find a very detailed explanation of log-likelihood over on it's [Wikipedia page](https://en.wikipedia.org/wiki/Likelihood_function). But, as with a lot of things on Wikipedia, you mat find the description there too technical and hence hard to follow. A more understand explanation can be found over at a [Lancaster University](http://ucrel.lancs.ac.uk/llwizard.html) website. Here [Dr Paul Rayson](http://www.lancaster.ac.uk/scc/about-us/people/paul-rayson) provides a much more accessible description of the technique and how to apply it. In fact, his article is the basis of [the implementation](https://github.com/pete-rai/words-of-our-culture/blob/master/ui/lib/loglikelihood.php) that I use in this project.
 
 
 
