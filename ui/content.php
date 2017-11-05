@@ -7,7 +7,6 @@
 
   $content = Model::getAllContent ();
   $years   = [];
-  $words   = ['president', 'nuclear', ''];
 
   foreach ($content as $movie)
   {
@@ -16,14 +15,15 @@
           $years [$movie->year] = [];
       }
 
-      $years [$movie->year][] = "<td><a href='bubbles.php?topic=$movie->content_id'>$movie->title</a></td>";
+      $years [$movie->year][] = "<div class='item'><a href='bubbles.php?topic=$movie->content_id'>$movie->title</a></div>";
   }
 
   $rows = [];
 
   foreach ($years as $year => $movies)
   {
-      $rows [] = "<tr><th colspan='".CONTENT_COLS."'>$year</th></tr>";
+      $rows [] = "<h2>$year</h2>";
+      $rows [] = "<div class='container'>";
 
       for ($idx = 0 ; $idx < count ($movies) ; $idx += CONTENT_COLS)
       {
@@ -31,56 +31,48 @@
 
           for ($n = 0 ; $n < CONTENT_COLS ; $n++)
           {
-              $row .= isset ($movies [$idx + $n]) ? $movies [$idx + $n] : '<td></td>';
+              if (isset ($movies [$idx + $n]))
+              {
+                  $row .= "<div class='col-md-4'>".$movies [$idx + $n]."</div>";
+              }
           }
 
-          $rows [] = "<tr>$row</tr>";
+          $rows [] = $row;
       }
+
+      $rows [] = "</div>";
   }
 
-  $table = '<table>'.implode ('', $rows).'</table>';
+  $table = implode ('', $rows);
 
 ?>
 <!DOCTYPE html>
-<html lang='en'>
-  <head>
-    <title>wooc &raquo; all content</title>
-    <meta charset='UTF-8'>
-    <style>
+<html lang="en">
+<head>
+  <title>wooc &raquo; all content</title>
+  <meta charset="UTF-8">
+  <meta name=viewport content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+  <style>
 
-    html
-    {
-        font-family: Calibri, Candara, Segoe, Optima, Arial, sans-serif;
-    }
+    html { font-family: Calibri, Candara, Segoe, Optima, Arial, sans-serif; }
+    div.item { padding: 8px; margin: 8px; font-size: 1.5em; text-align: center; }
+    h1 { text-align: center; }
+    h2 { background-color: lightgrey; darkgrey: white; text-align: center; padding: 6px; }
+    form { text-align: center; }
+    input { border: 1px solid grey; text-align: center; font-size: 1.5em; margin: 10px; margin-top: 15px; width: 70%; }
 
-    table
-    {
-        border: 1px solid darkgrey;
-        border-collapse: collapse;
-        margin: 5px;
-    }
-
-    td, th
-    {
-        border: 1px solid darkgrey;
-        padding: 5px;
-        text-align: center;
-    }
-
-    th
-    {
-        background-color: lightgrey;
-    }
-    </style>
-  </head>
-  <body>
-    <h1>Word of our Culture</h1>
-    <form action='bubbles.php'>
-        <input id='topic' name='topic' placeholder="word" />
-        <input type='submit' value='go for it'/>
-    </form>
-
-
-    <?php echo $table; ?>
-  </body>
+  </style>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="//platform-api.sharethis.com/js/sharethis.js#property=59ed1844899d1d001141cf42&product=unknown" async='async'></script>
+</head>
+<body>
+  <h1>Words of our Culture</h1>
+  <h2>Words</h2>
+  <form action='bubbles.php'>
+    <input id='topic' name='topic' placeholder="type a word and hit return" />
+  </form>
+  <?php echo $table; ?>
+</body>
 </html>
