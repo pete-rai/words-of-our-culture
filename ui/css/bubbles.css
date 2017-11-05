@@ -30,6 +30,16 @@ h1
     z-index: 99;
 }
 
+#steps span#footer
+{
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    width: 100%;
+    padding-bottom: 18px;
+}
+
 .slidein
 {
     color: White;

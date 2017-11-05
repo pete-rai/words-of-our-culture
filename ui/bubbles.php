@@ -90,6 +90,9 @@
       <ol>
         <?php echo $steps; ?>
       </ol>
+      <span id='footer'>
+          <a href='wooc/index.php'>More Information</a>
+      </span>
     </div>
   </body>
 </html>
