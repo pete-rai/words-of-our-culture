@@ -28,7 +28,6 @@ class Model extends Database
     public static function getContent ($key)
     {
         $sql = "SELECT c.title,
-                       c.image,
                        c.country,
                        c.year,
                        c.duration
@@ -45,7 +44,6 @@ class Model extends Database
     {
         $sql = "SELECT c.content_id,
                        c.title,
-                       c.image,
                        c.country,
                        c.year,
                        c.duration
