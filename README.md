@@ -11,13 +11,10 @@ This project is a linguistic analysis of the utterances within all the great Eng
 
 The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). Here are a few more examples:
 
-* [Back to the Future](http://rai.org.uk/wooc/bubbles.php?topic=tt0088763)
-* [Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583)
-* [Schindler's List](http://rai.org.uk/wooc/bubbles.php?topic=tt0108052)
-
-* [shark](http://rai.org.uk/wooc/bubbles.php?topic=shark)
-* [nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
-* [president](http://rai.org.uk/wooc/bubbles.php?topic=president)
+Movie | Word
+[Back to the Future](http://rai.org.uk/wooc/bubbles.php?topic=tt0088763) | [Shark](http://rai.org.uk/wooc/bubbles.php?topic=shark)
+[Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583) | [Nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
+[Schindler's List](http://rai.org.uk/wooc/bubbles.php?topic=tt0108052) | [President](http://rai.org.uk/wooc/bubbles.php?topic=president) 
 
 > I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
 
