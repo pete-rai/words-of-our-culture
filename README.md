@@ -11,6 +11,8 @@ The main output is a visual model of [the words which most characterise a given 
 
 > This readme only covers the technical workings of the project. It's the right place to start if you want to know _how the project works_. If, however, you want to know _what the project told us_, you should head over to the [project site for deeper insights](http://rai.org.uk/wooc/index.php).
 
+> I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
+
 ## The Movies
 
 So how did I go out choosing movies for inclusion within the corpus? Well the criteria was very simple, I chose movies which were:
@@ -37,7 +39,7 @@ Whilst forming the corpus, I wanted to make a list of _all the things that were 
 
 Here is an example of the first phase corpus text from the movie [Casablanca](https://en.wikipedia.org/wiki/Casablanca_(film)):
 
-> They grab Ugarte, then she walks in. That's the way it goes. One in, one out. Sam. Yes, boss? If it's December 1941 in Casablanca, what time is it in New York? What? My watch stopped. I bet they're asleep in New York. I bet they're asleep all over America. Of all the gin joints in all the towns in all the world she walks into mine. What's that you're playing? A little something of my own. Well, stop it. You know what I want to hear. No, I don't. You played it for her. You can play it for me. I don't think I can remember. If she can stand it, I can. Play it. Yes, boss.
+> _They grab Ugarte, then she walks in. That's the way it goes. One in, one out. Sam. Yes, boss? If it's December 1941 in Casablanca, what time is it in New York? What? My watch stopped. I bet they're asleep in New York. I bet they're asleep all over America. Of all the gin joints in all the towns in all the world she walks into mine. What's that you're playing? A little something of my own. Well, stop it. You know what I want to hear. No, I don't. You played it for her. You can play it for me. I don't think I can remember. If she can stand it, I can. Play it. Yes, boss._
 
 Occasionally, there were sections of non-spoken text within the subtitle tracks. These are audio descriptions that outline significant sounds for death audiences. For example, a track may have contained a sentence "the car is heard screeching it tyres as it speeds away". In the majority of cases, these sections were well marked and easy to eliminate. Some may have crept into the corpus, but not enough to significantly alter the context.
 
@@ -52,7 +54,7 @@ Once the corpus had been gathered, the next phase was to normalise the text in o
 
 Here is an example of the same text from Casablanca shown in the earlier section, but after the normalisation process has been executed upon it:
 
-> they grab ugarte then she walks in thats the way it goes one in one out sam yes boss if its december 1941 in casablanca what time is it in new york what my watch stopped i bet theyre asleep in new york i bet theyre asleep all over america of all the gin joints in all the towns in all the world she walks into mine whats that youre playing a little something of my own well stop it you know what i want to hear no i dont you played it for her you can play it for me i dont think i can remember if she can stand it i can play it yes boss
+> _they grab ugarte then she walks in thats the way it goes one in one out sam yes boss if its december 1941 in casablanca what time is it in new york what my watch stopped i bet theyre asleep in new york i bet theyre asleep all over america of all the gin joints in all the towns in all the world she walks into mine whats that youre playing a little something of my own well stop it you know what i want to hear no i dont you played it for her you can play it for me i dont think i can remember if she can stand it i can play it yes boss_
 
 Note that, if you plan to use the source code for your own use, it's important to maintain a _multi-byte text encoding chain_ on all your processes. If you don't, then some of the more exotic characters will be lost before step one above can properly handle them.
 
@@ -68,7 +70,7 @@ For this project, I used a very popular English language stemming algorithm call
 
 Here is an example of the same text from Casablanca shown in the earlier section, but after the stemming process has been executed upon it:
 
-> thei grab ugart then she walk in that the wai it goe on in on out sam ye boss if it decemb 1941 in casablanca what time is it in new york what my watch stop i bet theyr asleep in new york i bet theyr asleep all over america of all the gin joint in all the town in all the world she walk into mine what that your plai a littl someth of my own well stop it you know what i want to hear no i dont you plai it for her you can plai it for me i dont think i can rememb if she can stand it i can plai it ye boss
+> _thei grab ugart then she walk in that the wai it goe on in on out sam ye boss if it decemb 1941 in casablanca what time is it in new york what my watch stop i bet theyr asleep in new york i bet theyr asleep all over america of all the gin joint in all the town in all the world she walk into mine what that your plai a littl someth of my own well stop it you know what i want to hear no i dont you plai it for her you can plai it for me i dont think i can rememb if she can stand it i can plai it ye boss_
 
 Whilst we use stemming to provide consistent handling of commonly rooted words, we do still maintain a careful map from the stem to the actual words uttered in the movies. This is so that we can show meaningful results to users.
 
