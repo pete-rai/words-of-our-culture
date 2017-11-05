@@ -7,9 +7,17 @@ see demos of this and much more.
 
 This project is a linguistic analysis of the utterances within all the great English language movies, from the birth of sound cinema to the present day. It gathers together a corpus of all the speech from those movies and uses various statistical techniques to examine the words that were uttered.
 
-The main output is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). Aside from this, you can find further and deeper linguistic analysis [over on the main project site](http://rai.org.uk/wooc/index.php).
-
 > This readme only covers the technical workings of the project. It's the right place to start if you want to know _how the project works_. If, however, you want to know _what the project told us_, you should head over to the [project site for deeper insights](http://rai.org.uk/wooc/index.php).
+
+The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). Here are a few more examples:
+
+* [Back to the Future](http://rai.org.uk/wooc/bubbles.php?topic=tt0088763)
+* [Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583)
+* [Schindler's List](http://rai.org.uk/wooc/bubbles.php?topic=tt0108052)
+
+* [shark](http://rai.org.uk/wooc/bubbles.php?topic=shark)
+* [nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
+* [president](http://rai.org.uk/wooc/bubbles.php?topic=president)
 
 > I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
 
