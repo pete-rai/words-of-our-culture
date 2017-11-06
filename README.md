@@ -9,7 +9,7 @@ This project is a linguistic analysis of the utterances within all the great Eng
 
 > This readme only covers the technical workings of the project. It's the right place to start if you want to know _how the project works_. If, however, you want to know _what the project told us_, you should head over to the [project site for deeper insights](http://rai.org.uk/wooc/index.php).
 
-The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). Here are a few more examples:
+The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). This visualisation uses two earlier projects that I created and that are both available here on [my GitHub](https://github.com/pete-rai). One is the [bubbles visualisation](https://github.com/pete-rai/p5js-bubbles) and the other is the [jQuery slide-in control](https://github.com/pete-rai/jquery-slidein). Here are a few more examples of the visualisation in action:
 
 Movie | Word
 --- | ---
