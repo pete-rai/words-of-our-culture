@@ -107,7 +107,7 @@
       return $json;
   }
 
-  define ('MAX_ITEMS', 100);  // the maximum number of items to return to the bubbles
+  define ('MAX_ITEMS', 75);  // the maximum number of items to return to the bubbles
 
   header ('Content-Type: application/json');
   echo getNGrams (getCleanParam ('topic'), max (0, getParam ('limit', MAX_ITEMS)));
