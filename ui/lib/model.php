@@ -48,7 +48,7 @@ class Model extends Database
                        c.year,
                        c.duration
                   FROM content c
-              ORDER BY c.year,
+              ORDER BY c.year DESC,
                        c.title";
 
         return self::executeQuery ($sql);
