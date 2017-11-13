@@ -61,6 +61,11 @@ a:focus
     outline: 0;
 }
 
+a:hover
+{
+    color: #640000;
+}
+
 div#p5_loading
 {
     display: none;

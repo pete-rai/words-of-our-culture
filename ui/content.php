@@ -59,10 +59,10 @@
     html { font-family: Calibri, Candara, Segoe, Optima, Arial, sans-serif;}
     body { background-color: #dcdcdc; margin-bottom: 15px;}
     div.item { padding: 8px; margin: 8px; font-size: 1.5em; text-align: center; background-color: white; border-radius: 10px; }
-    h1 { text-align: center; }
+    h1 { text-align: center; color: #000080;}
     h2 { background-color: #000080; color: #dcdcdc; text-align: center; padding: 6px; }
     form { text-align: center; }
-    input { border: 1px solid grey; text-align: center; font-size: 1.5em; margin: 10px; margin-top: 15px; width: 70%; }
+    input { color: #000080; border: 1px solid grey; text-align: center; font-size: 1.5em; margin: 10px; margin-top: 15px; width: 70%; }
 
   </style>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
