@@ -93,7 +93,7 @@
         <?php echo $steps; ?>
       </ol>
       <span id='footer'>
-          <a href='wooc/index.php'>More Information</a>
+        <a href='https://github.com/pete-rai/words-of-our-culture#words-of-our-culture'>About</a>&nbsp;|&nbsp;<a href='content.php'>Index</a>
       </span>
     </div>
   </body>
