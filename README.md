@@ -16,7 +16,7 @@ Movie | Word
 [Psycho](http://rai.org.uk/wooc/bubbles.php?topic=tt0054215) | [France](http://rai.org.uk/wooc/bubbles.php?topic=france)
 [The Italian Job](http://rai.org.uk/wooc/bubbles.php?topic=tt0064505) | [Jesus](http://rai.org.uk/wooc/bubbles.php?topic=jesus)
 [Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583) | [Nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
-[JFK](http://rai.org.uk/wooc/bubbles.php?topic=tt0102138) | [&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;President&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;](http://rai.org.uk/wooc/bubbles.php?topic=president)
+[JFK](http://rai.org.uk/wooc/bubbles.php?topic=tt0102138) | [&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;President&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;](http://rai.org.uk/wooc/bubbles.php?topic=president)
 [Back to the Future](http://rai.org.uk/wooc/bubbles.php?topic=tt0088763) | [Gold](http://rai.org.uk/wooc/bubbles.php?topic=gold)
 
 > I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
