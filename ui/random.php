@@ -87,11 +87,12 @@ function getRandomWord ()
 }
 
 $topic = getCleanParam ('type') == 'word' ? getRandomWord () : getRandomContent ();
+
 ?>
 <html>
   <head>
-      <script>
-        window.location.href = 'bubbles.php?topic=<?php echo $topic; ?>';
-      </script>
+    <script>
+      window.location.href = 'bubbles.php?topic=<?php echo $topic; ?>';
+    </script>
   </head>
 </html>
