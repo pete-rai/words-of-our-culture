@@ -320,7 +320,7 @@ function Bubbles (_source, _parent, _onselect, _tiptext)
 
     this.mouseClicked = function ()
     {
-// SINGLE CLICK ONLY        if (Date.now () - this.last_click < VIZ_DBL_CLICK)  // no native double click in processing
+        if (Date.now () - this.last_click < VIZ_DBL_CLICK)  // no native double click in processing
         {
             this.select ();
         }
