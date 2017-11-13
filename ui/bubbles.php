@@ -21,6 +21,7 @@
 
   $title  = 'wooc'.($subject ? " &raquo; $subject" : '');
   $source = "ngrams.php?topic=$topic";  // data source url
+  $first  = count (getPostParams ('topic-')) == 0;
   $items  = array_merge (getPostParams ('topic-'), [$subject]);
   $steps  = implode ("\n", getListItems  ($items))."\n";
   $fields = implode ("\n", setPostParams ($items, 'topic-'))."\n";
@@ -66,9 +67,10 @@
           $('#next').submit ();
       };
 
-      var ontip = function (key)
+      var ontip = function (key, data)
       {
-          return "select this bubble to drill down";
+          console.log (data);
+          return "double click to open the '" + data.name + "' bubble";
       };
 
       var bubbles = new Bubbles (source, null, onselect, ontip);
