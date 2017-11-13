@@ -12,11 +12,11 @@ This project is a linguistic analysis of the utterances within all the great Eng
 The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). This visualisation uses two earlier projects that I created and that are both available here on [my GitHub](https://github.com/pete-rai). One is the [bubbles visualisation](https://github.com/pete-rai/p5js-bubbles) and the other is the [jQuery slide-in control](https://github.com/pete-rai/jquery-slidein). Here are a few more examples of the visualisation in action:
 
 Movie | Word
---- | ---
+:---: | :---:
 [Psycho](http://rai.org.uk/wooc/bubbles.php?topic=tt0054215) | [France](http://rai.org.uk/wooc/bubbles.php?topic=france)
 [The Italian Job](http://rai.org.uk/wooc/bubbles.php?topic=tt0064505) | [Jesus](http://rai.org.uk/wooc/bubbles.php?topic=jesus)
 [Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583) | [Nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
-[JFK](http://rai.org.uk/wooc/bubbles.php?topic=tt0102138) | [President&npsp;&npsp;&npsp;&npsp;&npsp;](http://rai.org.uk/wooc/bubbles.php?topic=president)
+[JFK](http://rai.org.uk/wooc/bubbles.php?topic=tt0102138) | [President&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;](http://rai.org.uk/wooc/bubbles.php?topic=president)
 [Back to the Future](http://rai.org.uk/wooc/bubbles.php?topic=tt0088763) | [Gold](http://rai.org.uk/wooc/bubbles.php?topic=gold)
 
 > I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
@@ -36,7 +36,7 @@ You can click [here](http://rai.org.uk/wooc/content.php) to see a full list of a
 Here is a list of the most wordy movies in the corpus:
 
  pos | movie | words/min
- --- | --- | ---
+ :---: | --- | :---:
    1 | [The Internship](http://rai.org.uk/wooc/bubbles.php?topic=tt2234155)      | 169.7815
    2 | [Death of a Salesman](http://rai.org.uk/wooc/bubbles.php?topic=tt0043458) | 165.9130
    3 | [Stage Door](http://rai.org.uk/wooc/bubbles.php?topic=tt0029604)          | 164.4891
@@ -46,7 +46,7 @@ Here is a list of the most wordy movies in the corpus:
 If those movies made your ears sore, here are the least wordy movies:
 
  pos | movie | words/min
- --- | --- | ---
+ :---: | --- | :---:
    5 | [Fantasia](http://rai.org.uk/wooc/bubbles.php?topic=tt0032455)               | 14.3040
    4 | [Eraserhead](http://rai.org.uk/wooc/bubbles.php?topic=tt0074486)             |  8.2235
    3 | [City Lights](http://rai.org.uk/wooc/bubbles.php?topic=tt0021749)            |  6.5287
