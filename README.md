@@ -7,7 +7,7 @@ see demos of this and much more.
 
 This project is a linguistic analysis of the utterances within all the great English language movies, from the birth of sound cinema to the present day. It gathers together a corpus of all the speech from those movies and uses various statistical techniques to examine the words that were uttered.
 
-> This readme only covers the technical workings of the project. It's the right place to start if you want to know _how the project works_. If, however, you want to know _what the project told us_, you should head over to the [project site for deeper insights](http://rai.org.uk/wooc/index.php).
+> This readme covers both _how the project works_ and _what the project told us_. If you just want the "science bit", then scroll down this readme and you will find a complete explanation of the techniques that I used.
 
 The main output of this project is a visual model of [the words which most characterise a given movie](http://rai.org.uk/wooc/random.php?type=movie) and, correspondingly, [the movies which most align with a given word](http://rai.org.uk/wooc/random.php?type=word). This visualisation uses two earlier projects that I created and that are both available here on [my GitHub](https://github.com/pete-rai). One is the [bubbles visualisation](https://github.com/pete-rai/p5js-bubbles) and the other is the [jQuery slide-in control](https://github.com/pete-rai/jquery-slidein). Here are a few more examples of the visualisation in action:
 
@@ -17,7 +17,43 @@ Movie | Word
 [Casablanca](http://rai.org.uk/wooc/bubbles.php?topic=tt0034583) | [Nuclear](http://rai.org.uk/wooc/bubbles.php?topic=nuclear)
 [JFK](http://rai.org.uk/wooc/bubbles.php?topic=tt0102138) | [President](http://rai.org.uk/wooc/bubbles.php?topic=president)
 
+You can see a full list of movies on the [content page](http://rai.org.uk/wooc/content.php) on the main site.
+
 > I have also got the whole thing working with the top one million pages on Wikipedia. It was a big job in terms of data sizes, but much easier in terms of corpus gathering and cleaning. However, I cannot fit that implementation (which still fits into a MySQL by the way) onto my rather limited hosting environment. Do get in touch via my [blog](http://rai.org.uk) if you want access to the Wikipedia version.
+
+## Some Findings
+
+Here is a run down of _some_ of the interesting things I dug up whilst playing with [the corpus](#the-corpus). Firstly, here is a list of the most wordy movies:
+
+ pos | movie | words / minute
+ --- | --- | ---
+   1 | [The Internship](http://rai.org.uk/wooc/bubbles.php?topic=tt2234155)         | 169.7815
+   2 | [Death of a Salesman](http://rai.org.uk/wooc/bubbles.php?topic=tt0043458)    | 165.9130
+   3 | [Stage Door](http://rai.org.uk/wooc/bubbles.php?topic=tt0029604)             | 164.4891
+   4 | [His Girl Friday](http://rai.org.uk/wooc/bubbles.php?topic=tt0032599)        | 162.7065
+   5 | [Horrible Bosses](http://rai.org.uk/wooc/bubbles.php?topic=tt1499658)        | 156.8878
+   6 | [The 40 Year-Old Virgin](http://rai.org.uk/wooc/bubbles.php?topic=tt0405422) | 148.2328
+   7 | [My Man Godfrey](http://rai.org.uk/wooc/bubbles.php?topic=tt0028010)         | 146.5638
+   8 | [American Hustle](http://rai.org.uk/wooc/bubbles.php?topic=tt1800241)        | 146.4058
+   9 | [The Palm Beach Story](http://rai.org.uk/wooc/bubbles.php?topic=tt0035169)   | 145.0795
+  10 | [Fences](http://rai.org.uk/wooc/bubbles.php?topic=tt2671706)                 | 145.0647
+
+If those movies made your ears sore, here are the least wordy movies:
+
+ pos | movie | words / minute
+ --- | --- | ---
+  10 | [Flash Gordon](http://rai.org.uk/wooc/bubbles.php?topic=tt0027623)                   | 21.5020
+   9 | [Blow-Up](http://rai.org.uk/wooc/bubbles.php?topic=tt0060176)                        | 19.8378
+   8 | [A Man Called Horse](http://rai.org.uk/wooc/bubbles.php?topic=tt0066049)             | 19.4386
+   7 | [Samson and Delilah](http://rai.org.uk/wooc/bubbles.php?topic=tt0041838)             | 19.1069
+   6 | [How the Grinch Stole Christmas](http://rai.org.uk/wooc/bubbles.php?topic=tt0170016) | 14.4712
+   5 | [Fantasia](http://rai.org.uk/wooc/bubbles.php?topic=tt0032455)                       | 14.3040
+   4 | [Eraserhead](http://rai.org.uk/wooc/bubbles.php?topic=tt0074486)                     |  8.2235
+   3 | [City Lights](http://rai.org.uk/wooc/bubbles.php?topic=tt0021749)                    |  6.5287
+   2 | [Modern Times](http://rai.org.uk/wooc/bubbles.php?topic=tt0027977)                   |  3.4368
+   1 | [One Million Years B.C.](http://rai.org.uk/wooc/bubbles.php?topic=tt0060782)         |  1.7100
+
+Not surprising to find two Chaplin silents in this list, but even they can't rival the grunting movie in last place. 
 
 ## The Movies
 
