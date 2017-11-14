@@ -25,6 +25,32 @@ h1
     z-index: 99;
 }
 
+#prompt
+{
+    display: none;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.8;
+    background-color: IndianRed;
+    color: White;
+    padding: 8px 18px;
+    z-index: 99;
+    font-size: 1.6em;
+    border-radius: 10px;
+}
+
+#prompt span hr
+{
+    height: 1px;
+    color: White;
+    background: White;
+    border: 0;
+    margin: 8px;
+}
+
 #steps
 {
     z-index: 99;
