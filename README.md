@@ -84,7 +84,7 @@ Here is an example of the same text from Casablanca shown in the earlier section
 
 > _they grab ugarte then she walks in thats the way it goes one in one out sam yes boss if its december 1941 in casablanca what time is it in new york what my watch stopped i bet theyre asleep in new york i bet theyre asleep all over america of all the gin joints in all the towns in all the world she walks into mine whats that youre playing a little something of my own well stop it you know what i want to hear no i dont you played it for her you can play it for me i dont think i can remember if she can stand it i can play it yes boss_
 
-*Note:* If you plan to use the source code for your own use, it's important to maintain a _multi-byte text encoding chain_ on all your processes. If you don't, then some of the more exotic characters will be lost before step two above can properly handle them.
+**Note:** If you plan to use the source code for your own use, it's important to maintain a _multi-byte text encoding chain_ on all your processes. If you don't, then some of the more exotic characters will be lost before step two above can properly handle them.
 
 ### Phase Three: Stemming
 
@@ -127,9 +127,9 @@ The model was [implemented within](https://github.com/pete-rai/words-of-our-cult
 
 ```
 
-*Note:* In the model, you will find reference to fields called "pos" which stands for part-of-speech. In this implementation, the only pos value I used was "word". Another valid value is "bi-gram", which is a pair of words (for example "New York" or "Blue Parrot"). Analysis based on bi-grams can be very useful, but it significantly swells the data counts. After bi-grams, comes tri-grams and then more generally [n-grams](https://en.wikipedia.org/wiki/N-gram) (for example "letters of transit" or "heres looking at you").
+**Note:** In the model, you will find reference to fields called "pos" which stands for part-of-speech. In this implementation, the only pos value I used was "word". Another valid value is "bi-gram", which is a pair of words (for example "New York" or "Blue Parrot"). Analysis based on bi-grams can be very useful, but it significantly swells the data counts. After bi-grams, comes tri-grams and then more generally [n-grams](https://en.wikipedia.org/wiki/N-gram) (for example "letters of transit" or "heres looking at you").
 
-*Note:* In the implementation, you will find the deployment a number of additional denormal tables. The use of denormal tables is generally considered very bad practice within an RDBMS; normally I would shun such database abuse. However, two things lead to my decision to use denormal tables. Firstly, it meant that data access for the visualisation became trivial, allowing me to host on a low-grade hosting server. Secondly, the database is a one-time-write schema, so keeping the denormal tables up to date is not an issue. These two considerations are also the reason why I commented out all the constraints within the [schema definition](https://github.com/pete-rai/words-of-our-culture/blob/master/db/schema.ddl).
+**Note:** In the implementation, you will find the deployment a number of additional denormal tables. The use of denormal tables is generally considered very bad practice within an RDBMS; normally I would shun such database abuse. However, two things lead to my decision to use denormal tables. Firstly, it meant that data access for the visualisation became trivial, allowing me to host on a low-grade hosting server. Secondly, the database is a one-time-write schema, so keeping the denormal tables up to date is not an issue. These two considerations are also the reason why I commented out all the constraints within the [schema definition](https://github.com/pete-rai/words-of-our-culture/blob/master/db/schema.ddl).
 
 ## The Analysis
 
