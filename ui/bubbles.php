@@ -82,7 +82,9 @@
         <?php echo $steps; ?>
       </ol>
       <span id="footer">
-        <a href="https://github.com/pete-rai/words-of-our-culture#words-of-our-culture">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="content.php">Index</a>
+        <a href="https://github.com/pete-rai/words-of-our-culture#words-of-our-culture">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="content.php">Index</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="http://rai.org.uk">Contact</a>
       </span>
     </div>
   </body>
