@@ -14,6 +14,8 @@ class Database
         $data = [];
         $con  = new mysqli (self::$host, self::$uid, self::$pwd, self::$schema);
 
+        $con->set_charset ('utf8');
+
         foreach ($args as $col=>$arg)
         {
             $esc = $con->real_escape_string ($arg);
