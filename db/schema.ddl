@@ -1,24 +1,23 @@
--- NOTE: You will see a lot of constraints commented out in the code below.
---       That is intentional. Basically its a read only schema and there will
---       be no write backs. Having the constraints just uses up space and
---       machine cycles.
 
 -- wooc schema
 
-DROP   DATABASE wooc;
+DROP DATABASE IF EXISTS wooc;
 CREATE DATABASE wooc;
 CONNECT wooc;
+
+SET AUTOCOMMIT=0;
 
 SELECT CONCAT (now(),' - started') info;
 
 -- pos table
 
+SELECT CONCAT (now(),' - pos') info;
+
 CREATE TABLE pos
 (
-    pos        CHAR(8)      NOT NULL,
+    pos        CHAR(8)      NOT NULL PRIMARY KEY,
     level      VARCHAR(8)   NOT NULL,
-    desciption VARCHAR(256) NOT NULL,
-    PRIMARY KEY (pos)
+    desciption VARCHAR(256) NOT NULL
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
@@ -28,109 +27,166 @@ VALUES ('WORD'    , 'ngram', 'singluar word'),
        ('BI-GRAM' , 'ngram', 'pairs of words'),
        ('TRI-GRAM', 'ngram', 'triplets of words');
 
--- content table
+-- movie table
 
-CREATE TABLE content
+SELECT CONCAT (now(),' - movie') info;
+
+CREATE TABLE movie
 (
-    content_id CHAR(9)         NOT NULL,
-    title      VARCHAR(64)     NOT NULL,
-    image      LONGTEXT        NOT NULL,
-    country    VARCHAR(16)     NOT NULL,
-    year       INT(4) UNSIGNED NOT NULL,
-    duration   INT(4) UNSIGNED NOT NULL,
-    script     LONGTEXT        NOT NULL
+    id       CHAR(9)         NOT NULL PRIMARY KEY,
+    title    VARCHAR(64)     NOT NULL,
+    year     INT(4) UNSIGNED NOT NULL,
+    duration INT(4) UNSIGNED NOT NULL
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
-SELECT CONCAT (now(),' - inserting content') info;
-
-SET AUTOCOMMIT=0;
-SOURCE ./sql/content.sql
+SOURCE ./sql/movie.sql
 COMMIT;
-SET AUTOCOMMIT=1;
+CREATE INDEX idx_title_on_movie    ON movie (title   , id);
+CREATE INDEX idx_year_on_movie     ON movie (year    , id);
+CREATE INDEX idx_duration_on_movie ON movie (duration, id);
 
-SELECT CONCAT (now(),' - content indexes') info;
+-- image table
 
-ALTER TABLE content ADD CONSTRAINT PRIMARY KEY pk_on_content (content_id);
+SELECT CONCAT (now(),' - image') info;
 
-CREATE INDEX idx_title_on_content    ON content (title   , content_id);
-CREATE INDEX idx_country_on_content  ON content (country , content_id);
-CREATE INDEX idx_year_on_content     ON content (year    , content_id);
-CREATE INDEX idx_duration_on_content ON content (duration, content_id);
+CREATE TABLE image
+(
+    movie_id CHAR(9)  NOT NULL PRIMARY KEY,
+    packshot LONGTEXT NOT NULL,
+    FOREIGN KEY (movie_id) REFERENCES movie (id)
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+SOURCE ./sql/image.sql
+COMMIT;
+
+-- origin table
+
+SELECT CONCAT (now(),' - origin') info;
+
+CREATE TABLE origin
+(
+    movie_id CHAR(9)     NOT NULL,
+    country  VARCHAR(32) NOT NULL,
+    PRIMARY KEY (movie_id, country),
+    FOREIGN KEY (movie_id) REFERENCES movie (id)
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+SOURCE ./sql/origin.sql
+COMMIT;
+CREATE INDEX idx_country_on_origin ON origin (country, movie_id);
+
+-- genre table
+
+SELECT CONCAT (now(),' - category') info;
+
+CREATE TABLE category
+(
+    movie_id CHAR(9)     NOT NULL,
+    genre    VARCHAR(16) NOT NULL,
+    PRIMARY KEY (movie_id, genre),
+    FOREIGN KEY (movie_id) REFERENCES movie (id)
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+SOURCE ./sql/category.sql
+COMMIT;
+CREATE INDEX idx_genre_on_category ON category (genre, movie_id);
+
+-- person table
+
+SELECT CONCAT (now(),' - person') info;
+
+CREATE TABLE person
+(
+    id   CHAR(9)     NOT NULL PRIMARY KEY,
+    name VARCHAR(32) NOT NULL
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+SOURCE ./sql/person.sql
+COMMIT;
+CREATE INDEX idx_name_on_person ON person (name, id);
+
+-- cast table
+
+SELECT CONCAT (now(),' - cast') info;
+
+CREATE TABLE cast
+(
+    movie_id  CHAR(9)     NOT NULL,
+    person_id CHAR(9)     NOT NULL,
+    role      VARCHAR(16) NOT NULL,
+    PRIMARY KEY (movie_id, person_id, role),
+    FOREIGN KEY (movie_id)  REFERENCES movie  (id),
+    FOREIGN KEY (person_id) REFERENCES person (id)
+)
+ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+SOURCE ./sql/cast.sql
+COMMIT;
+CREATE INDEX idx_person_on_cast ON cast (person_id, movie_id);
 
 -- utterance table
 
+SELECT CONCAT (now(),' - utterance') info;
+
 CREATE TABLE utterance
 (
-    utterance_id CHAR(32) NOT NULL,
-    pos          CHAR(8)  NOT NULL,
-    utterance    TEXT     NOT NULL,
-    stem         TEXT     NOT NULL
+    id        CHAR(32) NOT NULL PRIMARY KEY,
+    pos       CHAR(8)  NOT NULL,
+    utterance TEXT     NOT NULL,
+    stem      TEXT     NOT NULL,
+    FOREIGN KEY (pos) REFERENCES pos (pos),
+    UNIQUE (pos, utterance(128))
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
-SELECT CONCAT (now(),' - inserting utterances') info;
-
-SET AUTOCOMMIT=0;
-SOURCE ./sql/utter.sql
-
+SOURCE ./sql/utterance.sql
 COMMIT;
-SET AUTOCOMMIT=1;
-
-SELECT CONCAT (now(),' - utterance indexes') info;
-
-ALTER TABLE utterance ADD CONSTRAINT PRIMARY KEY pk_on_utter (utterance_id);
--- ALTER TABLE utterance ADD CONSTRAINT FOREIGN KEY fk_pos_on_utter (pos) REFERENCES pos (pos);
--- ALTER TABLE utterance ADD CONSTRAINT uc_utterance UNIQUE (pos, utterance(128));
-
 CREATE INDEX idx_stem_on_utterance ON utterance (pos, stem(128));
 
 -- occurrence table
 
+SELECT CONCAT (now(),' - occurrence') info;
+
 CREATE TABLE occurrence
 (
     utterance_id CHAR(32) NOT NULL,
-    content_id   CHAR(9)  NOT NULL,
-    tally        INT(6) UNSIGNED NOT NULL
+    movie_id     CHAR(9)  NOT NULL,
+    tally        INT(6) UNSIGNED NOT NULL,
+    PRIMARY KEY (utterance_id, movie_id),
+    FOREIGN KEY (movie_id)     REFERENCES movie     (id),
+    FOREIGN KEY (utterance_id) REFERENCES utterance (id)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
-SELECT CONCAT (now(),' - inserting occurrences') info;
-
-SET AUTOCOMMIT=0;
-SOURCE ./sql/occur.sql
+SOURCE ./sql/occurrence.sql
 COMMIT;
-SET AUTOCOMMIT=1;
-
-SELECT CONCAT (now(),' - occurrence indexes') info;
-
-ALTER TABLE occurrence ADD CONSTRAINT PRIMARY KEY pk_on_occur (utterance_id, content_id);
--- ALTER TABLE occurrence ADD CONSTRAINT FOREIGN KEY fk_content_id_on_occurr   (content_id  ) REFERENCES content   (content_id  );
--- ALTER TABLE occurrence ADD CONSTRAINT FOREIGN KEY fk_utterance_id_on_occurr (utterance_id) REFERENCES utterance (utterance_id);
-
-CREATE INDEX idx_content_on_occurrence ON occurrence (content_id, utterance_id);
+CREATE INDEX idx_movie_on_occurrence ON occurrence (movie_id, utterance_id);
 
 -- normative_occurrence table - sz = utterance
 
 CREATE TABLE normative_occurrence
 (
-    utterance_id CHAR(32) NOT NULL,
+    utterance_id CHAR(32) NOT NULL PRIMARY KEY,
     tally        INT(6) UNSIGNED NOT NULL,
---    CONSTRAINT FOREIGN KEY fk_utterance_id_on_norm_occur (utterance_id) REFERENCES utterance (utterance_id),
-    PRIMARY KEY (utterance_id)
+    FOREIGN KEY (utterance_id) REFERENCES utterance (id)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
--- lexicon table - sz = content
+-- lexicon table - sz = movie
 
 CREATE TABLE lexicon
 (
-    content_id CHAR(9) NOT NULL,
-    pos        CHAR(8) NOT NULL,
-    tally      INT(6) UNSIGNED NOT NULL,
---    CONSTRAINT FOREIGN KEY fk_content_id_on_lex (content_id) REFERENCES content (content_id),
---    CONSTRAINT FOREIGN KEY fk_pos_on_lex        (pos       ) REFERENCES pos     (pos       ),
-    PRIMARY KEY (content_id, pos)
+    movie_id CHAR(9) NOT NULL,
+    pos      CHAR(8) NOT NULL,
+    tally    INT(6) UNSIGNED NOT NULL,
+    PRIMARY KEY (movie_id, pos),
+    FOREIGN KEY (movie_id) REFERENCES movie (id),
+    FOREIGN KEY (pos)      REFERENCES pos   (pos)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
@@ -138,38 +194,37 @@ ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 CREATE TABLE normative_lexicon
 (
-    pos   CHAR(8) NOT NULL,
+    pos   CHAR(8) NOT NULL PRIMARY KEY,
     tally INT(6)  UNSIGNED NOT NULL,
---    CONSTRAINT FOREIGN KEY fk_pos_on_norm_lex (pos) REFERENCES pos (pos),
-    PRIMARY KEY (pos)
+    FOREIGN KEY (pos) REFERENCES pos (pos)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
--- content_utterances table - sz = utterances * content
+-- movie_utterances table - sz = utterances * movie
 
-CREATE TABLE content_utterance
+CREATE TABLE movie_utterance
 (
-    content_id CHAR(9) NOT NULL,
+    movie_id   CHAR(9) NOT NULL,
     pos        CHAR(8) NOT NULL,
     stem       TEXT    NOT NULL,
     utterances TEXT    NOT NULL,
---    CONSTRAINT FOREIGN KEY fk_content_id_on_cont_utter (content_id) REFERENCES content (content_id),
---    CONSTRAINT FOREIGN KEY fk_pos_on_cont_utter        (pos)        REFERENCES pos     (pos),
-    PRIMARY KEY (content_id, pos, stem(128))
+    PRIMARY KEY (movie_id, pos, stem(128)),
+    FOREIGN KEY (movie_id) REFERENCES movie (id),
+    FOREIGN KEY (pos)      REFERENCES pos   (pos)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
--- content_occurrence table - sz = occurrence * content
+-- movie_occurrence table - sz = occurrence * movie
 
-CREATE TABLE content_occurrence
+CREATE TABLE movie_occurrence
 (
-    content_id CHAR(9) NOT NULL,
-    pos        CHAR(8) NOT NULL,
-    stem       TEXT    NOT NULL,
-    tally      INT(6) UNSIGNED NOT NULL,
---    CONSTRAINT FOREIGN KEY fk_content_id_on_cont_occurr (content_id) REFERENCES content (content_id),
---    CONSTRAINT FOREIGN KEY fk_pos_on_cont_occurr        (pos)        REFERENCES pos     (pos),
-    PRIMARY KEY (content_id, pos, stem(128))
+    movie_id CHAR(9) NOT NULL,
+    pos      CHAR(8) NOT NULL,
+    stem     TEXT    NOT NULL,
+    tally    INT(6) UNSIGNED NOT NULL,
+    PRIMARY KEY (movie_id, pos, stem(128)),
+    FOREIGN KEY (movie_id) REFERENCES movie (id),
+    FOREIGN KEY (pos)      REFERENCES pos   (pos)
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
@@ -191,12 +246,12 @@ DROP PROCEDURE IF EXISTS fill_lexicon //
 CREATE PROCEDURE fill_lexicon ()
 BEGIN
    INSERT
-     INTO lexicon (content_id, pos, tally)
-   SELECT o.content_id, u.pos, SUM(o.tally)
+     INTO lexicon (movie_id, pos, tally)
+   SELECT o.movie_id, u.pos, SUM(o.tally)
      FROM occurrence o,
           utterance u
-    WHERE o.utterance_id = u.utterance_id
- GROUP BY o.content_id, u.pos;
+    WHERE o.utterance_id = u.id
+ GROUP BY o.movie_id, u.pos;
 END //
 
 DROP PROCEDURE IF EXISTS fill_normative_lexicon //
@@ -209,44 +264,43 @@ BEGIN
  GROUP BY pos;
 END //
 
-DROP PROCEDURE IF EXISTS fill_content_utterance //
-CREATE PROCEDURE fill_content_utterance ()
+DROP PROCEDURE IF EXISTS fill_movie_utterance //
+CREATE PROCEDURE fill_movie_utterance ()
 BEGIN
    INSERT
-     INTO content_utterance (content_id, pos, stem, utterances)
-   SELECT o.content_id,
+     INTO movie_utterance (movie_id, pos, stem, utterances)
+   SELECT o.movie_id,
           u.pos,
           u.stem,
-          GROUP_CONCAT(u.utterance SEPARATOR ' ') utterances
+          GROUP_CONCAT(u.stem SEPARATOR ' ') utterances
      FROM utterance u,
           occurrence o
-    WHERE u.utterance_id = o.utterance_id
- GROUP BY o.content_id,
+    WHERE u.id = o.utterance_id
+ GROUP BY o.movie_id,
           u.pos,
           u.stem;
 END //
 
-DROP PROCEDURE IF EXISTS fill_content_occurrence //
-CREATE PROCEDURE fill_content_occurrence ()
+DROP PROCEDURE IF EXISTS fill_movie_occurrence //
+CREATE PROCEDURE fill_movie_occurrence ()
 BEGIN
    INSERT
-     INTO content_occurrence (content_id, pos, stem, tally)
-   SELECT c.content_id,
+     INTO movie_occurrence (movie_id, pos, stem, tally)
+   SELECT m.id,
           u.pos,
           u.stem,
           SUM(o.tally) tally
      FROM occurrence o,
           utterance u,
-          content c
-    WHERE o.utterance_id = u.utterance_id
-      AND o.content_id = c.content_id
- GROUP BY o.content_id,
+          movie m
+    WHERE o.utterance_id = u.id
+      AND o.movie_id = m.id
+ GROUP BY o.movie_id,
           u.pos,
           u.stem;
 END //
 
 DELIMITER ;
-
 COMMIT;
 
 -- run procedures
@@ -256,17 +310,19 @@ SELECT CONCAT (now(),' - filling denormal tables') info;
 CALL fill_normative_occurrence;
 CALL fill_lexicon;
 CALL fill_normative_lexicon;
-CALL fill_content_utterance;
-CALL fill_content_occurrence;
+CALL fill_movie_utterance;
+CALL fill_movie_occurrence;
 
 COMMIT;
 
 -- create users
 
-DROP USER web@localhost;
+DROP USER IF EXISTS wooc@localhost;
 FLUSH PRIVILEGES;
-CREATE USER web@localhost IDENTIFIED BY 'web';
-GRANT SELECT ON wooc.* TO web@localhost;
+CREATE USER wooc@localhost IDENTIFIED BY 'wooc';
+GRANT SELECT ON wooc.* TO wooc@localhost;
 COMMIT;
+
+SET AUTOCOMMIT=1;
 
 SELECT CONCAT (now(),' - finished') info;

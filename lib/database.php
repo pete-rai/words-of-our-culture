@@ -6,8 +6,8 @@ class Database
 {
     private static $host   = '127.0.0.1';
     private static $schema = 'wooc';
-    private static $uid    = 'web';
-    private static $pwd    = 'web';
+    private static $uid    = 'wooc';
+    private static $pwd    = 'wooc';
 
     public static function executeQuery ($sql, $args = [])
     {

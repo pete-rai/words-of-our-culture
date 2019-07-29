@@ -3,7 +3,19 @@
 include_once '../lib/stemmer.php';
 include_once '../lib/logger.php';
 
-date_default_timezone_set ('UTC'); // important - do not remove and leave as first line
+// --- file locations
+
+define ('FILE_CORPUS'   , '../corpus/text/');
+define ('FILE_SQL'      , './sql/');
+define ('FILE_SPEC'     ,  FILE_CORPUS.'*_full.txt');
+define ('SQL_MOVIE'     ,  FILE_SQL.'movie.sql');
+define ('SQL_IMAGE'     ,  FILE_SQL.'image.sql');
+define ('SQL_ORIGIN'    ,  FILE_SQL.'origin.sql');
+define ('SQL_CATEGORY'  ,  FILE_SQL.'category.sql');
+define ('SQL_PERSON'    ,  FILE_SQL.'person.sql');
+define ('SQL_CAST'      ,  FILE_SQL.'cast.sql');
+define ('SQL_UTTERANCE' ,  FILE_SQL.'utterance.sql');
+define ('SQL_OCCURRENCE',  FILE_SQL.'occurrence.sql');
 
 // --- standard string cleanser
 
@@ -15,14 +27,35 @@ function cleanse ($text)
     return strtolower (trim ($text));                          // lowercase and trimmed
 }
 
+// --- appends a line in a file
+
+function append ($file, $value)
+{
+    file_put_contents ($file, "$value\n", FILE_APPEND);
+}
+
+// --- wipes a file
+
+function wipe ($file)
+{
+    file_put_contents ($file, '');
+}
+
+// --- escape a string for sql
+
+function esc ($text)
+{
+    return trim (str_replace ("'", "\'", $text));
+}
+
 // --- parses analysis into lexical parts
 
 function getLexicals ($file)
 {
     $lines    = file ($file);
     $text     = '';
-    $phrases  = array ();
-    $lexicals = array ();
+    $phrases  = [];
+    $lexicals = [];
 
     foreach ($lines as $line)
     {
@@ -37,7 +70,7 @@ function getLexicals ($file)
                     $tag .= $line [$i];
                 }
 
-                array_push ($phrases, array ('tag' => $tag, 'text' => ''));
+                array_push ($phrases, ['tag' => $tag, 'text' => '']);
             }
             else if ($line[$i] == ')')
             {
@@ -56,28 +89,54 @@ function getLexicals ($file)
     return $lexicals;
 }
 
-// --- makes content table SQL
+// --- makes metadata tables SQL
 
-function contentSQL ($key, $details)
+function metadataSQL ($key, $details)
 {
-    $title = trim (str_replace ("'", "\'", $details[0]));
-    $place = trim (str_replace ("'", "\'", $details[1]));
-    $year  = trim ($details[2]);
-    $len   = trim ($details[3]);
-    $image = trim (str_replace ("'", "\'", $details[4]));
+    $details->title    = esc ($details->title);
+    $details->image    = esc ($details->image);
+    $details->packshot = esc ($details->packshot);
 
-    return "INSERT INTO content (content_id, title, country, year, duration, script, image) VALUES ('$key', '$title', '$place', $year, $len, '', '$image');";
+    append (SQL_MOVIE, "INSERT INTO movie (id, title, year, duration) VALUES ('$key', '$details->title', $details->year, $details->duration);");
+    append (SQL_IMAGE, "INSERT INTO image (movie_id, packshot) VALUES ('$key', '$details->packshot');");
+
+    foreach ($details->country as $country)
+    {
+        $country = esc ($country);
+        append (SQL_ORIGIN, "INSERT INTO origin (movie_id, country) VALUES ('$key', '$country');");
+    }
+
+    foreach ($details->genres as $genre)
+    {
+        $genre = esc ($genre);
+        append (SQL_CATEGORY, "INSERT INTO category (movie_id, genre) VALUES ('$key', '$genre');");
+    }
+
+    foreach ($details->director as $director)
+    {
+        $director->name = esc ($director->name);
+        append (SQL_PERSON, "INSERT IGNORE INTO person (id, name) VALUES ('$director->id', '$director->name');");
+        append (SQL_CAST  , "INSERT INTO cast (movie_id, person_id, role) VALUES ('$key', '$director->id', 'D');");
+    }
+
+    foreach ($details->cast as $idx => $cast)
+    {
+        $cast->name = esc ($cast->name);
+        $idx += 1;  // so as not zero based
+        append (SQL_PERSON, "INSERT IGNORE INTO person (id, name) VALUES ('$cast->id', '$cast->name');");
+        append (SQL_CAST  , "INSERT INTO cast (movie_id, person_id, role) VALUES ('$key', '$cast->id', '$idx');");
+    }
 }
 
-// --- makes utterances table SQL
+// --- makes utterance tables SQL
 
-function utterancesSQL ($key, $script)
+function utteranceSQL ($key, $script)
 {
-    $poss   = array ('WORD'); //, 'BI-GRAM'); //, 'TRI-GRAM');
+    $poss   = ['WORD']; //, 'BI-GRAM']; //, 'TRI-GRAM'];
     $count  = count ($poss);
     $words  = explode (' ', cleanse ($script));
-    $utters = array ();
-    $buffer = array ();
+    $utters = [];
+    $buffer = [];
 
     for ($i=0 ; $i<$count ; $i++)
     {
@@ -105,12 +164,12 @@ function utterancesSQL ($key, $script)
         }
     }
 
-    $sqlUtter = array ();
-    $sqlOccur = array ();
+    $sqlUtter = [];
+    $sqlOccur = [];
 
     $curr = count ($utters);
     $idx  = 0;
-    $step = 500;
+    $step = 1000;  // rows per statement
 
     foreach ($utters as $utter=>$count)
     {
@@ -120,8 +179,8 @@ function utterancesSQL ($key, $script)
 
         if ($idx == 0)
         {
-        //  $sqlOccur [] = "SELECT CONCAT (now(), ' - ', '$key', ' - ', $curr) info;";
-            $sqlOccur [] = "INSERT INTO occurrence (content_id, utterance_id, tally) VALUES ";
+            $sqlOccur [] = "INSERT INTO occurrence (movie_id, utterance_id, tally) VALUES ";
+            $sqlUtter [] = "INSERT IGNORE INTO utterance (id, pos, utterance, stem) VALUES ";
         }
 
         $idx++;
@@ -135,36 +194,36 @@ function utterancesSQL ($key, $script)
             $sep = ';';
         }
 
-        $sqlUtter [] = "INSERT INTO utterance (utterance_id, pos, utterance, stem) VALUES ('$ukey', '$pos', '$utter', '$stem');";
-        $sqlOccur [] = "('$key', '$ukey', $count) $sep ";
+        $sqlUtter [] = "('$ukey', '$pos', '$utter', '$stem')$sep";
+        $sqlOccur [] = "('$key', '$ukey', $count)$sep";
     }
 
-    return array ('utter'=> $sqlUtter, 'occur'=> $sqlOccur);
+    append (SQL_UTTERANCE , implode ("\n", $sqlUtter));
+    append (SQL_OCCURRENCE, implode ("\n", $sqlOccur));
 }
 
 // -- processes all the corpus files into SQL
 
-function process ()
+function process ($strict = true)  // strict means stop on errors
 {
-    $corpus     = "../corpus/movies/text";
-    $filespec   = "$corpus/*_full.txt";
-    $sqlContent = "./sql/content.sql";
-    $sqlUtter   = "./sql/utter.sql";
-    $sqlOccur   = "./sql/occur.sql";
-    $sqlTemp    = "./sql/temp.sql";
-
-    $files = glob ($filespec);
+    $errors = [];
+    $files  = glob (FILE_SPEC);
     sort ($files);
 
-    file_put_contents ($sqlContent, '');
-    file_put_contents ($sqlUtter  , '');
-    file_put_contents ($sqlOccur  , '');
+    wipe (SQL_MOVIE);
+    wipe (SQL_IMAGE);
+    wipe (SQL_ORIGIN);
+    wipe (SQL_CATEGORY);
+    wipe (SQL_PERSON);
+    wipe (SQL_CAST);
+    wipe (SQL_UTTERANCE);
+    wipe (SQL_OCCURRENCE);
 
     foreach ($files as $file)
     {
         $info = str_replace ('_full', '_info', $file);
-        $name = str_replace (array ('.txt', '_full', '_'), array ('', '', ' '), substr ($file, strlen ($corpus) + 1));
-        $key  = substr ($file, strlen ($corpus) + 1, 9);
+        $name = str_replace (['.txt', '_full', '_'], ['', '', ' '], substr ($file, strlen (FILE_CORPUS)));
+        $key  = substr ($file, strlen (FILE_CORPUS), 9);
 
         Log::line ();
         Log::info ($name);
@@ -172,48 +231,46 @@ function process ()
         if (!file_exists ($info))
         {
             Log::warn ('no info file');
+            $errors [] = $key;
+            if ($strict) die ();
         }
         else
         {
             $script  = file_get_contents ($file);
-            $details = file ($info);
+            $details = json_decode (file_get_contents ($info));
 
-            if (count ($details) != 5)
+            if (!$details)
             {
-                Log::warn ('incorrect info file', count ($details));
+                Log::warn ('empty info');
+                $errors [] = $key;
+                if ($strict) die ();
             }
             else if (!$script)
             {
-                Log::warn ('no script - skipping');
+                Log::warn ('no script');
+                $errors [] = $key;
+                if ($strict) die ();
             }
             else
             {
-                $sql = contentSQL ($key, $details);
-                file_put_contents ($sqlContent, $sql."\n", FILE_APPEND);
-
-                $sql = utterancesSQL ($key, $script);
-
-                file_put_contents ($sqlUtter, implode ("\n", $sql['utter'])."\n", FILE_APPEND);
-                file_put_contents ($sqlOccur, implode ("\n", $sql['occur'])."\n", FILE_APPEND);
+                metadataSQL  ($key, $details);
+                utteranceSQL ($key, $script);
             }
         }
     }
 
     Log::line ();
-    Log::info ("sorting");
-    system ("sort $sqlUtter > $sqlTemp" );
 
-    Log::line ();
-    Log::info ("uniqing");
-    system ("uniq $sqlTemp  > $sqlUtter");
-
-    Log::line ();
-    Log::info ("done");
-    unlink ($sqlTemp);
+    if ($errors)
+    {
+        Log::warn ('errors found: '.implode (', ', array_unique ($errors)));
+    }
+    else
+    {
+        Log::info ('errors found: none');
+    }
 
     Log::line ();
 }
 
-  process ();
-
-?>
+process ();
