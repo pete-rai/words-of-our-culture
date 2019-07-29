@@ -272,7 +272,7 @@ BEGIN
    SELECT o.movie_id,
           u.pos,
           u.stem,
-          GROUP_CONCAT(u.stem SEPARATOR ' ') utterances
+          GROUP_CONCAT(u.utterance SEPARATOR ' ') utterances
      FROM utterance u,
           occurrence o
     WHERE u.id = o.utterance_id
