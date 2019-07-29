@@ -1,4 +1,4 @@
-corpus/movies/gather/temp/*
-corpus/movies/text/tt*.txt
+corpus/gather/temp/*
+corpus/text/tt*.txt
 db/sql/*.sql
 **/.DS_Store
