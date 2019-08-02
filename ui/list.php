@@ -40,7 +40,7 @@
           </ul>
           <small><b>director</b></small>
           <ul>
-            <li><a href=""><?= $movie->cast ['1']['name'] ?></a></li>
+            <li><a href=""><?= $movie->cast ['D']['name'] ?></a></li>
           </ul>
         </div>
       </div>
