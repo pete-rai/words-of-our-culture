@@ -33,7 +33,7 @@ SELECT CONCAT (now(),' - movie') info;
 
 CREATE TABLE movie
 (
-    id       CHAR(9)         NOT NULL PRIMARY KEY,
+    id       INT(8)          NOT NULL PRIMARY KEY,
     title    VARCHAR(64)     NOT NULL,
     year     INT(4) UNSIGNED NOT NULL,
     duration INT(4) UNSIGNED NOT NULL
@@ -52,7 +52,7 @@ SELECT CONCAT (now(),' - image') info;
 
 CREATE TABLE image
 (
-    movie_id CHAR(9)  NOT NULL PRIMARY KEY,
+    movie_id INT(8)   NOT NULL PRIMARY KEY,
     packshot LONGTEXT NOT NULL,
     FOREIGN KEY (movie_id) REFERENCES movie (id)
 )
@@ -67,7 +67,7 @@ SELECT CONCAT (now(),' - origin') info;
 
 CREATE TABLE origin
 (
-    movie_id CHAR(9)     NOT NULL,
+    movie_id INT(8)      NOT NULL,
     country  VARCHAR(32) NOT NULL,
     PRIMARY KEY (movie_id, country),
     FOREIGN KEY (movie_id) REFERENCES movie (id)
@@ -84,7 +84,7 @@ SELECT CONCAT (now(),' - category') info;
 
 CREATE TABLE category
 (
-    movie_id CHAR(9)     NOT NULL,
+    movie_id INT(8)      NOT NULL,
     genre    VARCHAR(16) NOT NULL,
     PRIMARY KEY (movie_id, genre),
     FOREIGN KEY (movie_id) REFERENCES movie (id)
@@ -101,7 +101,7 @@ SELECT CONCAT (now(),' - person') info;
 
 CREATE TABLE person
 (
-    id   CHAR(9)     NOT NULL PRIMARY KEY,
+    id   INT(8)      NOT NULL PRIMARY KEY,
     name VARCHAR(32) NOT NULL
 )
 ENGINE=INNODB DEFAULT CHARSET=UTF8;
@@ -116,8 +116,8 @@ SELECT CONCAT (now(),' - cast') info;
 
 CREATE TABLE cast
 (
-    movie_id  CHAR(9)     NOT NULL,
-    person_id CHAR(9)     NOT NULL,
+    movie_id  INT(8)      NOT NULL,
+    person_id INT(8)      NOT NULL,
     role      VARCHAR(16) NOT NULL,
     PRIMARY KEY (movie_id, person_id, role),
     FOREIGN KEY (movie_id)  REFERENCES movie  (id),
@@ -155,7 +155,7 @@ SELECT CONCAT (now(),' - occurrence') info;
 CREATE TABLE occurrence
 (
     utterance_id CHAR(32) NOT NULL,
-    movie_id     CHAR(9)  NOT NULL,
+    movie_id     INT(8)   NOT NULL,
     tally        INT(6) UNSIGNED NOT NULL,
     PRIMARY KEY (utterance_id, movie_id),
     FOREIGN KEY (movie_id)     REFERENCES movie     (id),
@@ -181,7 +181,7 @@ ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 CREATE TABLE lexicon
 (
-    movie_id CHAR(9) NOT NULL,
+    movie_id INT(8)  NOT NULL,
     pos      CHAR(8) NOT NULL,
     tally    INT(6) UNSIGNED NOT NULL,
     PRIMARY KEY (movie_id, pos),
@@ -204,7 +204,7 @@ ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 CREATE TABLE movie_utterance
 (
-    movie_id   CHAR(9) NOT NULL,
+    movie_id   INT(8)  NOT NULL,
     pos        CHAR(8) NOT NULL,
     stem       TEXT    NOT NULL,
     utterances TEXT    NOT NULL,
@@ -218,7 +218,7 @@ ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 CREATE TABLE movie_occurrence
 (
-    movie_id CHAR(9) NOT NULL,
+    movie_id INT(8)  NOT NULL,
     pos      CHAR(8) NOT NULL,
     stem     TEXT    NOT NULL,
     tally    INT(6) UNSIGNED NOT NULL,
