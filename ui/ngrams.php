@@ -4,112 +4,86 @@
 
   include_once 'lib/model.php';
   include_once 'lib/helper.php';
-  include_once 'lib/stemmer.php';
   include_once 'lib/loglikelihood.php';
 
   // --- calculates the log likelihood for the given context
 
-  function getLogLikelihood ($context, $content)
+  function getLogLikelihood ($context, $movie, $limit)
   {
       $results = [];
 
       $pos = Model::$posWord;  // we only handle work ngrams as yet
       $n1  = Model::getNormativeCount ($pos); // num words on corpus 1
-      $n2s = Model::getContentCounts  ($pos); // num words on corpus 2
+      $n2s = Model::getMovieCounts    ($pos); // num words on corpus 2
 
-      if ($content)
+      if ($movie)
       {
-          $o1s = Model::getContentNormativeOccurrences ($pos, $context); // observed words on corpus 1
-          $o2s = Model::getContentOccurrences          ($pos, $context); // observed words on corpus 2
+          $o1s = Model::getMovieNormativeOccurrences ($pos, $context); // observed words on corpus 1
+          $o2s = Model::getMovieOccurrences          ($pos, $context); // observed words on corpus 2
       }
       else
       {
-          $o1s = Model::getWordNormativeOccurrences    ($pos, $context); // observed words on corpus 1
-          $o2s = Model::getWordOccurrences             ($pos, $context); // observed words on corpus 2
+          $o1s = Model::getWordNormativeOccurrences  ($pos, $context); // observed words on corpus 1
+          $o2s = Model::getWordOccurrences           ($pos, $context); // observed words on corpus 2
       }
-
-      // calculate the loglikelihood for each item
 
       foreach ($o2s as $item)
       {
-          $n2 = $n2s [$item->content_id];
+          $n2 = $n2s [$item->id];
           $o1 = $o1s [$item->stem];
           $o2 = $item->tally;
 
           $ll  = logLikelihood ($n1, $o1, $n2, $o2);  // the magic lies in here ;)
-          $ref = $content ? $item->stem : $item->content_id;
+          $ref = $movie ? $item->stem : $item->id;
 
           $results ['_'.$ref] =  // underscore ensures that all keys are strings - else some are ints
           [
-              'content_id' => $item->content_id,
-                   'title' => $item->title,
-               'utterance' => $item->utterance,
-                      'll' => $ll
+              'name'  => $movie ? $item->utterance : $item->title,
+              'topic' => $movie ? shortest (explode (' ', $item->utterance)) : $item->id,
+              'count' => $ll,
           ];
       }
-/*
-      array_walk ($results, function ($a) use (&$max)
-      {
-          $max = max ($max, $a ['ll']);  // find the max loglikelihood
-      });
 
-      array_walk ($results, function (&$a) use ($max)
-      {
-          $a ['percent'] = $a ['ll'] / $max * 100;  // rebase all to be a percentage of the maximum
-      });
-*/
       uasort ($results, function ($a, $b)
       {
-          return $a ['ll'] < $b ['ll'];  // sort into loglikelihood order
+          return $a ['count'] < $b ['count'];  // sort into loglikelihood order
       });
 
-      return $results;
-  }
-
-  // --- make a list in the format that the bubbles are expecting
-
-  function makeList ($items, $content, $limit)
-  {
-      $tags  = [];
-      $items = array_slice ($items, 0, $limit);
-
-      foreach ($items as $id=>$item)
-      {
-          $utter = array_reduce (explode (' ', $item ['utterance']), function ($a, $b)
-          {
-              if (!$a || !$b) return $a.$b;
-              return (strlen ($a) < strlen ($b)) ? $a : $b;
-          });
-
-          $tags [$id] =
-          [
-              'name'  => $item [$content ? 'utterance' : 'title'],
-              'count' => $item ['ll'],
-              'topic' => $content ? $utter : $item ['content_id'],
-          ];
-      }
-
-      return json_encode ($tags, JSON_FORCE_OBJECT);
+      return json_encode (array_slice ($results, 0, $limit), JSON_FORCE_OBJECT);
   }
 
   // --- provide the json document to power the bubble drawing
 
-  function getNGrams ($topic, $limit)
+  function getNGrams ($type, $topic, $limit)
   {
-      $json = '{}';
+      $ngrams = '{}';
 
       if ($topic)
       {
-          $content = strpos ($topic, 'tt') === 0;
-          $json    = makeList (getLogLikelihood ($topic, $content), $content, $limit);
+          if ($type == 'movie')
+          {
+              $ngrams = getLogLikelihood ($topic, true, $limit);
+          }
+          else if ($type == 'word')
+          {
+              $ngrams = getLogLikelihood ($topic, false, $limit);
+          }
+          else if ($type == 'person')
+          {
+
+          }
+          else if ($type == 'genre')
+          {
+
+          }
+
       }
 
-      return $json;
+      return $ngrams;
   }
 
   define ('MAX_ITEMS', 75);  // the maximum number of items to return to the bubbles
-
   header ('Content-Type: application/json');
-  echo getNGrams (getCleanParam ('topic'), max (0, getParam ('limit', MAX_ITEMS)));
+  echo getNGrams (getCleanParam ('type'), getCleanParam ('topic'), max (0, getParam ('limit', MAX_ITEMS)));
 
-?>
+// don't close the PHP tag else traling new lines will go into the json response document

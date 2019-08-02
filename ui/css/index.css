@@ -1,0 +1,117 @@
+
+html
+{
+    font-family: Calibri, Candara, Segoe, Optima, Arial, sans-serif;
+}
+
+body
+{
+    background-color: #dcdcdc;
+    margin-bottom: 15px;
+}
+
+div.tile
+{
+    padding: 5px;
+    margin: 8px;
+    font-size: 1.2em;
+    text-align: center;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+div.tile.noart
+{
+    padding: 12px;
+    background-color: white;
+}
+
+div.tile.noart a
+{
+    font-size: 1.75em;
+    font-weight: bold;
+}
+
+div.tile h3
+{
+    padding: 0;
+    margin: 0;
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+div.tile small
+{
+    font-size: 0.75em;
+}
+
+div.tile img.poster
+{
+    width: 220px;
+    height: 320px;
+    box-shadow: 0px 3px 15px rgba(0,0,0,0.5);
+}
+
+div.tile img.poster:hover
+{
+    opacity: 0.25;
+}
+
+div.tile div.info
+{
+    transition: .5s ease;
+    opacity: 0;
+    width: 220px;
+    height: 320px;
+    background: white;
+    padding: 8px 10px;
+    border: 5px solid #337ab7;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+div.tile div.info ul
+{
+    list-style: none;
+    padding: 0;
+}
+
+div.tile:hover div.info
+{
+    opacity: 0.85;
+}
+
+h1
+{
+    text-align: center;
+    color: #337ab7;
+}
+
+h2
+{
+    background-color: #337ab7;
+    color: #dcdcdc;
+    text-align: center;
+    font-size: 1.5em;
+    padding: 12px;
+}
+
+form
+{
+    text-align: center;
+}
+
+input
+{
+    color: #000080;
+    border: 1px solid grey;
+    text-align: center;
+    font-size: 1.3em;
+    padding: 5px;
+    margin: 10px;
+    margin-top: 15px;
+    width: 70%;
+}

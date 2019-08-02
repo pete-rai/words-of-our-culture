@@ -2,73 +2,73 @@
 
 include_once 'lib/helper.php';
 
-function getRandomContent ()
+function getRandomMovie ()
 {
-    $content = array
+    $movies = array
     (
-        'tt0032138', // the_wizard_of_oz
-        'tt0038650', // its_a_wonderful_life
-        'tt0050083', // 12_angry_men
-        'tt0053291', // some_like_it_hot
-        'tt0054215', // psycho
-        'tt0054331', // spartacus
-        'tt0064505', // the_italian_job
-        'tt0070047', // the_exorcist
-        'tt0070239', // jesus_christ_superstar
-        'tt0073195', // jaws
-        'tt0073812', // tommy
-        'tt0074119', // all_the_presidents_men
-        'tt0075005', // the_omen
-        'tt0075148', // rocky
-        'tt0076759', // star_wars_episode_iv_-_a_new_hope
-        'tt0077631', // grease
-        'tt0079417', // kramer_vs_kramer
-        'tt0079470', // life_of_brian
-        'tt0082971', // raiders_of_the_lost_ark
-        'tt0083866', // e_t_the_extra-terrestrial
-        'tt0083987', // gandhi
-        'tt0086465', // trading_places
-        'tt0086567', // wargames
-        'tt0087332', // ghostbusters
-        'tt0088247', // terminator
-        'tt0088763', // back_to_the_future
-        'tt0096438', // who_framed_roger_rabbit
-        'tt0102138', // jfk
-        'tt0108052', // schindlers_list
-        'tt0109830', // forrest_gump
-        'tt0111161', // the_shawshank_redemption
-        'tt0114709', // toy_story
-        'tt0119654', // men_in_black
-        'tt0120338', // titanic
-        'tt0120815', // saving_private_ryan
-        'tt0126029', // shrek
-        'tt0133093', // the_matrix
-        'tt0145660', // austin_powers_the_spy_who_shagged_me
-        'tt0167261', // the_lord_of_the_rings_the_two_towers
-        'tt0172495', // gladiator
-        'tt0266543', // finding_nemo
-        'tt0266697', // kill_bill_vol_1
-        'tt0317705', // the_incredibles
-        'tt0361748', // inglourious_basterds
-        'tt0365748', // shaun_of_the_dead
-        'tt0454876', // life_of_pi
-        'tt0468569', // the_dark_knight
-        'tt0796366', // star_trek
-        'tt0988045', // sherlock_holmes
-        'tt1074638', // skyfall
-        'tt1099212', // twilight
-        'tt1179056', // a_nightmare_on_elm_street
-        'tt1179904', // paranormal_activity
-        'tt1194173', // the_bourne_legacy
-        'tt1201607', // harry_potter_and_the_deathly_hallows_part_2
-        'tt1285016', // the_social_network
-        'tt1375666', // inception
-        'tt1392170', // the_hunger_games
-        'tt1853728', // django_unchained
-        'tt2357129', // jobs
+        '10032138', // the wizard of oz
+        '10038650', // its a wonderful life
+        '10050083', // 12 angry men
+        '10053291', // some like it hot
+        '10054215', // psycho
+        '10054331', // spartacus
+        '10064505', // the italian job
+        '10070047', // the exorcist
+        '10070239', // jesus christ superstar
+        '10073195', // jaws
+        '10073812', // tommy
+        '10074119', // all the presidents men
+        '10075005', // the omen
+        '10075148', // rocky
+        '10076759', // star wars episode iv - a new hope
+        '10077631', // grease
+        '10079417', // kramer vs kramer
+        '10079470', // life of brian
+        '10082971', // raiders of the lost ark
+        '10083866', // e t the extra-terrestrial
+        '10083987', // gandhi
+        '10086465', // trading places
+        '10086567', // wargames
+        '10087332', // ghostbusters
+        '10088247', // terminator
+        '10088763', // back to the future
+        '10096438', // who framed roger rabbit
+        '10102138', // jfk
+        '10108052', // schindlers list
+        '10109830', // forrest gump
+        '10111161', // the shawshank redemption
+        '10114709', // toy story
+        '10119654', // men in black
+        '10120338', // titanic
+        '10120815', // saving private ryan
+        '10126029', // shrek
+        '10133093', // the matrix
+        '10145660', // austin powers the spy who shagged me
+        '10167261', // the lord of the rings the two towers
+        '10172495', // gladiator
+        '10266543', // finding nemo
+        '10266697', // kill bill vol 1
+        '10317705', // the incredibles
+        '10361748', // inglourious basterds
+        '10365748', // shaun of the dead
+        '10454876', // life of pi
+        '10468569', // the dark knight
+        '10796366', // star trek
+        '10988045', // sherlock holmes
+        '11074638', // skyfall
+        '11099212', // twilight
+        '11179056', // a nightmare on elm street
+        '11179904', // paranormal activity
+        '11194173', // the bourne legacy
+        '11201607', // harry po1er and the deathly hallows part 2
+        '11285016', // the social network
+        '11375666', // inception
+        '11392170', // the hunger games
+        '11853728', // django unchained
+        '12357129', // jobs
     );
 
-    return $content [array_rand ($content)];
+    return $movies [array_rand ($movies)];
 }
 
 function getRandomWord ()
@@ -86,13 +86,14 @@ function getRandomWord ()
     return $words [array_rand ($words)];
 }
 
-$topic = getCleanParam ('type') == 'word' ? getRandomWord () : getRandomContent ();
+$type  = getCleanParam ('type');
+$topic = $type == 'word' ? getRandomWord () : getRandomMovie ();
 
 ?>
 <html>
   <head>
     <script>
-      window.location.href = 'bubbles.php?topic=<?php echo $topic; ?>';
+      window.location.href = 'bubbles.php?type=<?= $type ?>&topic=<?= $topic ?>';
     </script>
   </head>
 </html>

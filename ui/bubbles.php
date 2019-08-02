@@ -4,23 +4,26 @@
   include_once 'lib/helper.php';
   include_once 'lib/model.php';
 
+  $type  = getCleanParam ('type');
   $topic = getCleanParam ('topic');
 
-  if (strpos ($topic, 'tt') === 0)
+  if ($type == 'movie')
   {
-      $content = Model::getContent ($topic);
-      $subject = "$content->title ($content->year)";
-      $type    = 'Movie';
+      $movie   = Model::getMovie ($topic);
+      $subject = "$movie->title ($movie->year)";
+      $tag     = 'Movie';
+      $next    = 'word';
   }
   else
   {
       $topic   = PorterStemmer::stem ($topic);
       $subject = implode (', ', Model::getUtterances (Model::$posWord, $topic));
-      $type    = strpos ($subject, ',') ? 'Words' : 'Word';
+      $tag     = strpos ($subject, ',') ? 'Words' : 'Word';
+      $next    = 'movie';
   }
 
   $title  = 'wooc'.($subject ? " &raquo; $subject" : '');
-  $source = "ngrams.php?topic=$topic";  // data source url
+  $source = "ngrams.php?type=$type&topic=$topic";  // data source url
   $first  = count (getPostParams ('topic-')) == 0 ? 'true' : 'false';  // output to js script later
   $items  = array_merge (getPostParams ('topic-'), [$subject]);
   $steps  = implode ("\n", getListItems  ($items))."\n";
@@ -30,7 +33,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><?php echo $title; ?></title>
+    <title><?= $title ?></title>
     <meta charset="UTF-8">
     <meta name=viewport content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/jquery.slidein.css">
@@ -66,10 +69,10 @@
           control.css ("opacity", "0.7");
       });
 
-      var source   = "<?php echo $source; ?>";
+      var source   = "<?= $source ?>";
       var onselect = function (key, data)
       {
-          $("#next").attr ("action", "bubbles.php?topic=" + data.topic);
+          $("#next").attr ("action", "bubbles.php?type=<?= $next ?>&topic=" + data.topic);
           $("input#topic").val (key);
           $("#next").submit ();
       };
@@ -85,7 +88,7 @@
       {
           $("#steps").slidein ({ open: false, opacity: 0.7, peek: 0, breadth: 300, toOpen: "hover", toClose: "hover", "position": 75 });
 
-          if (<?php echo $first; ?>)
+          if (<?= $first ?>)
           {
               $("#prompt").delay (2500).fadeIn (600).delay (5500).fadeOut (900);
           }
@@ -95,18 +98,18 @@
   </head>
   <body>
     <form id="next" action="#" method="post">
-      <?php echo $fields; ?>
+      <?= $fields ?>
     </form>
-    <h1><?php echo "$type: $subject"; ?></h1>
+    <h1><?= "$tag: $subject" ?></h1>
     <div id="prompt"><span>Double-click the bubbles to open them up<hr/>Open the blue handle on the left for more information</span></div>
     <div id="steps">
       <h2>Words of our Culture</h2>
       <ol>
-        <?php echo $steps; ?>
+        <?= $steps ?>
       </ol>
       <span id="footer">
         <a href="https://github.com/pete-rai/words-of-our-culture#words-of-our-culture">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href="content.php">Index</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="index.php">Index</a>&nbsp;&nbsp;|&nbsp;&nbsp;
         <a href="http://rai.org.uk">Contact</a>
       </span>
     </div>
@@ -117,6 +120,6 @@
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
       ga('create', 'UA-88629800-1', 'auto');
       ga('send', 'pageview');
-    </script>    
+    </script>
   </body>
 </html>

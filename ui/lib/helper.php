@@ -10,46 +10,29 @@ function cleanse ($text)
     return strtolower (trim ($text));                          // lowercase and trimmed
 }
 
-// --- gets the named url parameter if its there
+// --- returns the named url parameter if its there
 
 function getParam ($name, $default = '')
 {
     return isset ($_GET[$name]) ? strtolower (trim (urldecode ($_GET[$name]))) : $default;
 }
 
-// --- gets the named url parameter if its there and cleanse it too
+// --- returns the named url parameter if its there and cleanse it too
 
-function getCleanParam ($name, $default = 0)
+function getCleanParam ($name, $default = '')
 {
     return cleanse (getParam ($name, $default));
 }
 
-// --- gets the server path of the current page
+// --- returns the shortest string in an array
 
-function getPath ()
+function shortest ($array)
 {
-    $parts = parse_url ($_SERVER ['REQUEST_URI']);
-    return $parts ['path'];
-}
-
-// --- gets the url parameters of the current page, excluding any specified ones
-
-function getParams ($excludes = [])
-{
-    $parts = parse_url ($_SERVER ['REQUEST_URI']);
-    parse_str ($parts ['query'], $params);  // might be empty
-
-    foreach ($excludes as $exclude)
+    return array_reduce ($array, function ($a, $b)
     {
-        if (isset ($params [$exclude]))
-        {
-            unset ($params [$exclude]);
-        }
-    }
-
-    ksort ($params);  // sorts by key
-
-    return http_build_query ($params);
+        if (!$a || !$b) return $a.$b;
+        return (strlen ($a) < strlen ($b)) ? $a : $b;
+    });
 }
 
 // --- fetchs a numbered list of params for a given prefix from the post data

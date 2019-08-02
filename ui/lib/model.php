@@ -23,35 +23,86 @@ class Model extends Database
         return $map;
     }
 
-    // --- returns a single content item for the given content key
+    // --- returns a single movie item for the given movie key
 
-    public static function getContent ($key)
+    public static function getMovie ($key)
     {
-        $sql = "SELECT c.title,
-                       c.country,
-                       c.year,
-                       c.duration
-                  FROM content c
-                 WHERE c.content_id = ':key'";
+        $sql = "SELECT m.id,
+                       m.title,
+                       m.year,
+                       m.duration,
+               (SELECT GROUP_CONCAT(g.genre)
+                  FROM category g
+                 WHERE g.movie_id = m.id) genres,
+               (SELECT GROUP_CONCAT(CONCAT(c.role, '|', p.id, '|', p.name))
+                  FROM cast c,
+                       person p
+                 WHERE c.person_id = p.id
+                   AND c.movie_id = m.id ) cast
+                  FROM movie m
+                 WHERE m.id = :key";
 
-        $content = self::executeQuery ($sql, ['key' => $key]);
-        return array_shift ($content);
+        return array_shift (self::executeQuery ($sql, ['key' => $key]));
     }
 
-    // --- returns every content item
+    // --- returns every movie item for a given year
 
-    public static function getAllContent ()
+    public static function getMoviesByYear ($year)
     {
-        $sql = "SELECT c.content_id,
-                       c.title,
-                       c.country,
-                       c.year,
-                       c.duration
-                  FROM content c
-              ORDER BY c.year DESC,
-                       c.title";
+        $sql = "SELECT m.id,
+                       m.title,
+                       m.year,
+                       m.duration,
+               (SELECT GROUP_CONCAT(g.genre)
+                  FROM category g
+                 WHERE g.movie_id = m.id) genres,
+               (SELECT GROUP_CONCAT(CONCAT(c.role, '|', p.id, '|', p.name))
+                  FROM cast c,
+                       person p
+                 WHERE c.person_id = p.id
+                   AND c.movie_id = m.id ) cast
+                  FROM movie m
+                 WHERE m.year = :year
+              GROUP BY m.id
+              ORDER BY m.title";
+
+        return self::executeQuery ($sql, ['year' => $year]);
+    }
+
+    // --- returns every movie item
+
+    public static function getAllMovies ()
+    {
+        $sql = "SELECT m.id,
+                       m.title,
+                       m.year,
+                       m.duration,
+               (SELECT GROUP_CONCAT(g.genre)
+                  FROM category g
+                 WHERE g.movie_id = m.id) genres,
+               (SELECT GROUP_CONCAT(CONCAT(c.role, '|', p.id, '|', p.name))
+                  FROM cast c,
+                       person p
+                 WHERE c.person_id = p.id
+                   AND c.movie_id = m.id ) cast
+                  FROM movie m
+              GROUP BY m.id
+              ORDER BY m.year DESC,
+                       m.title";
 
         return self::executeQuery ($sql);
+    }
+
+    // --- returns the image for a movie id
+
+    public static function getMovieImage ($key)
+    {
+        $sql = "SELECT i.packshot
+                  FROM image i
+                 WHERE i.movie_id = :key";
+
+        $item = array_shift (self::executeQuery ($sql, ['key' => $key]));
+        return $item ? $item->packshot : null;
     }
 
     // --- returns a set of utterances for a given stem
@@ -88,7 +139,7 @@ class Model extends Database
                        SUM(no.tally) tally
                   FROM normative_occurrence no,
                        utterance u
-                 WHERE no.utterance_id = u.utterance_id
+                 WHERE no.utterance_id = u.id
                    AND u.pos  = ':pos'
                    AND u.stem = ':stem'";
 
@@ -96,79 +147,126 @@ class Model extends Database
         return self::makeMap ($data, 'stem', 'tally');
     }
 
-    // --- returns the normative word occurrences for the given part-of-speech and content key
+    // --- returns the normative word occurrences for the given part-of-speech and movie key
 
-    public static function getContentNormativeOccurrences ($pos, $key)
+    public static function getMovieNormativeOccurrences ($pos, $key)
     {
         $sql = "SELECT u.stem,
                        SUM(no.tally) tally
                   FROM normative_occurrence no,
                        utterance u,
                        occurrence o
-                 WHERE no.utterance_id = u.utterance_id
+                 WHERE no.utterance_id = u.id
                    AND u.pos = ':pos'
-                   AND o.content_id = ':key'
-                   AND o.utterance_id = u.utterance_id
+                   AND o.movie_id = :key
+                   AND o.utterance_id = u.id
               GROUP BY u.stem";
 
         $data = self::executeQuery ($sql, ['pos' => $pos, 'key' => $key]);
         return self::makeMap ($data, 'stem', 'tally');
     }
 
-    // --- returns the content counts for the given part-of-speech
+    // --- returns the movie counts for the given part-of-speech
 
-    public static function getContentCounts ($pos)
+    public static function getMovieCounts ($pos)
     {
-        $sql = "SELECT l.content_id,
+        $sql = "SELECT l.movie_id,
                        l.tally
                   FROM lexicon l
                  WHERE l.pos = ':pos'";
 
         $data = self::executeQuery ($sql, ['pos' => $pos]);
-        return self::makeMap ($data, 'content_id', 'tally');
+        return self::makeMap ($data, 'movie_id', 'tally');
     }
 
     // --- returns the word occurrences for the given part-of-speech and stem
 
     public static function getWordOccurrences ($pos, $stem)
     {
-        $sql = "SELECT c.content_id,
-                       c.title,
+        $sql = "SELECT m.id,
+                       m.title,
                        u.stem,
                        u.stem utterance,
                        SUM(o.tally) tally
                   FROM occurrence o,
                        utterance u,
-                       content c
-                 WHERE o.utterance_id = u.utterance_id
-                   AND o.content_id = c.content_id
+                       movie m
+                 WHERE o.utterance_id = u.id
+                   AND o.movie_id = m.id
                    AND u.pos  = ':pos'
                    AND u.stem = ':stem'
-              GROUP BY c.content_id";
+              GROUP BY m.id";
 
         return self::executeQuery ($sql, ['pos' => $pos, 'stem' => $stem]);
     }
 
-    // --- returns the word occurrences for the given part-of-speech and content key
+    // --- returns the word occurrences for the given part-of-speech and stem for a given year
 
-    public static function getContentOccurrences ($pos, $key)
+    public static function getWordOccurrencesInYear ($pos, $stem, $year)
     {
-        $sql = "SELECT c.content_id,
-                       c.title,
+        $sql = "SELECT m.id,
+                       m.title,
+                       SUM(o.tally) tally
+                  FROM occurrence o,
+                       utterance u,
+                       movie m
+                 WHERE o.utterance_id = u.id
+                   AND o.movie_id = m.id
+                   AND m.year =  :year
+                   AND u.pos  = ':pos'
+                   AND u.stem = ':stem'
+              GROUP BY o.movie_id
+              ORDER BY SUM(o.tally) desc";
+
+        return self::executeQuery ($sql, ['pos' => $pos, 'stem' => $stem, 'year' => $year]);
+    }
+
+    // --- returns the word occurrences for the given part-of-speech and movie key
+
+    public static function getMovieOccurrences ($pos, $key)
+    {
+        $sql = "SELECT m.id,
+                       m.title,
                        cu.utterances utterance,
                        co.stem,
                        co.tally
-                  FROM content c,
-                       content_utterance cu,
-                       content_occurrence co
-                 WHERE cu.content_id = co.content_id
+                  FROM movie m,
+                       movie_utterance cu,
+                       movie_occurrence co
+                 WHERE cu.movie_id = co.movie_id
                    AND cu.pos = co.pos
                    AND cu.stem = co.stem
-                   AND co.content_id = c.content_id
-                   AND co.content_id = ':key'
+                   AND co.movie_id = m.id
+                   AND co.movie_id = :key
                    AND co.pos = ':pos'";
 
         return self::executeQuery ($sql, ['pos' => $pos, 'key' => $key]);
+    }
+
+    // --- returns the probability of a word occurrences for the given part-of-speech and stem by year
+
+    public static function getWordProbabilityByYear ($pos, $stem)
+    {
+        $sql = "SELECT m.year,
+                       t.tally movies,
+                       SUM(o.tally) tally,
+                       SUM(o.tally) / t.tally chance
+                  FROM occurrence o,
+                       utterance u,
+                       movie m,
+                       (SELECT m.year,
+                               COUNT(m.year) tally
+                          FROM movie m
+                      GROUP BY m.year) t
+                 WHERE o.utterance_id = u.id
+                   AND o.movie_id = m.id
+                   AND t.year = m.year
+                   AND u.pos  = ':pos'
+                   AND u.stem = ':stem'
+              GROUP BY m.year
+              ORDER BY m.year";
+
+        return self::executeQuery ($sql, ['pos' => $pos, 'stem' => $stem]);
     }
 }
 
